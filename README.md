@@ -1,4 +1,6 @@
+本项目于2024年11月克隆自[https://github.com/stakira/OpenUtau.git](https://github.com/stakira/OpenUtau.git)，用于个人学习，添加了大量中文注解，可以参考。
 
+以下是原自述文件
 # OpenUtau
 
 OpenUtau is a free, open-source editor made for the UTAU community.
