@@ -48,11 +48,16 @@ namespace OpenUtau.App.Views {
         private readonly ReactiveCommand<UPart, Unit> PartTranscribeCommand;
 
         public MainWindow() {
+            //创建主窗口
             Log.Information("Creating main window.");
+            //初始化主窗口组件
             InitializeComponent();
+            //初始化完成
             Log.Information("Initialized main window component.");
+            //设置主窗口的数据上下文为MainWindowViewModel
             DataContext = viewModel = new MainWindowViewModel();
 
+            
             viewModel.InitProject();
             viewModel.AddTempoChangeCmd = ReactiveCommand.Create<int>(tick => AddTempoChange(tick));
             viewModel.DelTempoChangeCmd = ReactiveCommand.Create<int>(tick => DelTempoChange(tick));
@@ -199,11 +204,22 @@ namespace OpenUtau.App.Views {
             viewModel.NewProject();
         }
 
+        /// <summary>
+        /// 打开文件按钮的事件处理函数，调用异步方法Open
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         void OnMenuOpen(object sender, RoutedEventArgs args) => Open();
-        async void Open() {
+
+        /// <summary>
+        /// 打开文件的异步方法
+        /// </summary>
+        async void Open() 
+        {
             if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
                 return;
             }
+            //调用FilePicker的OpenFilesAboutProject方法，打开文件选择对话框，选择文件
             var files = await FilePicker.OpenFilesAboutProject(
                 this, "menu.file.open",
                 FilePicker.ProjectFiles,
@@ -212,10 +228,12 @@ namespace OpenUtau.App.Views {
                 FilePicker.UST,
                 FilePicker.MIDI,
                 FilePicker.UFDATA);
+            //如果没有选择文件，返回
             if (files == null || files.Length == 0) {
                 return;
             }
             try {
+                //调用viewModel的OpenProject方法，打开文件
                 viewModel.OpenProject(files);
             } catch (Exception e) {
                 Log.Error(e, $"Failed to open files {string.Join("\n", files)}");

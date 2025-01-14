@@ -22,22 +22,34 @@ namespace OpenUtau.Core {
     }
 
     public class DocManager : SingletonBase<DocManager> {
+        //构造函数
         DocManager() {
+            //初始化
             Project = new UProject();
         }
 
+        //线程
         private Thread mainThread;
+        //任务调度器
         private TaskScheduler mainScheduler;
 
+        //默认播放位置
         public int playPosTick = 0;
 
+        //只读属性
         public TaskScheduler MainScheduler => mainScheduler;
+        //用于将Action发送委托到UI线程上
         public Action<Action> PostOnUIThread { get; set; }
+        //插件数组
         public Plugin[] Plugins { get; private set; }
+        //音素工厂数组
         public PhonemizerFactory[] PhonemizerFactories { get; private set; }
+        //当前项目实例
         public UProject Project { get; private set; }
         public bool HasOpenUndoGroup => undoGroup != null;
+        //分片剪贴板
         public List<UPart> PartsClipboard { get; set; }
+        //音符剪贴板
         public List<UNote> NotesClipboard { get; set; }
         internal PhonemizerRunner PhonemizerRunner { get; private set; }
 
@@ -179,6 +191,8 @@ namespace OpenUtau.Core {
             }
         }
 
+
+        //关键部分，重要，用于执行命令
         public void ExecuteCmd(UCommand cmd) {
             if (mainThread != Thread.CurrentThread) {
                 if (!(cmd is ProgressBarNotification)) {
@@ -187,9 +201,12 @@ namespace OpenUtau.Core {
                 PostOnUIThread(() => ExecuteCmd(cmd));
                 return;
             }
+            //通知类型的命令
             if (cmd is UNotification) {
+                //保存项目通知
                 if (cmd is SaveProjectNotification saveProjectNotif) {
                     if (undoQueue.Count > 0) {
+                        //保存当前撤销队列的最后一个元素
                         savedPoint = undoQueue.Last();
                     }
                     if (string.IsNullOrEmpty(saveProjectNotif.Path)) {
@@ -197,7 +214,9 @@ namespace OpenUtau.Core {
                     } else {
                         Format.Ustx.Save(saveProjectNotif.Path, Project);
                     }
-                } else if (cmd is LoadProjectNotification notification) {
+                }
+                //如果是加载项目通知
+                else if (cmd is LoadProjectNotification notification) {
                     undoQueue.Clear();
                     redoQueue.Clear();
                     undoGroup = null;
@@ -346,6 +365,7 @@ namespace OpenUtau.Core {
             }
         }
 
+        //发布命令
         private void Publish(UCommand cmd, bool isUndo = false) {
             lock (lockObj) {
                 foreach (var sub in subscribers) {

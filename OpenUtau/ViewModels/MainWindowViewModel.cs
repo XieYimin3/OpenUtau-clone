@@ -80,6 +80,7 @@ namespace OpenUtau.App.ViewModels {
             PartDeleteCommand = ReactiveCommand.Create<UPart>(part => {
                 TracksViewModel.DeleteSelectedParts();
             });
+            //把自己注册为命令订阅者
             DocManager.Inst.AddSubscriber(this);
         }
 
@@ -91,10 +92,13 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void InitProject() {
+            //命令行参数
             var args = Environment.GetCommandLineArgs();
             if (args.Length == 2 && File.Exists(args[1])) {
                 try {
+                    //加载工程
                     Core.Format.Formats.LoadProject(new string[] { args[1] });
+                    //重新映射音色
                     DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
                     return;
                 } catch (Exception e) {
@@ -105,7 +109,11 @@ namespace OpenUtau.App.ViewModels {
             NewProject();
         }
 
+        /// <summary>
+        /// 创建一个新的工程，如果默认模板存在则加载默认模板，否则创建一个空白工程
+        /// </summary>
         public void NewProject() {
+            //默认模板路径，Windows下为C:\Users\用户名\Documents\OpenUtau\Templates\default.ustx
             var defaultTemplate = Path.Combine(PathManager.Inst.TemplatesPath, "default.ustx");
             if (File.Exists(defaultTemplate)) {
                 try {
@@ -118,15 +126,24 @@ namespace OpenUtau.App.ViewModels {
                     DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
                 }
             }
+            //创建一个新的工程
             DocManager.Inst.ExecuteCmd(new LoadProjectNotification(Core.Format.Ustx.Create()));
         }
 
+        /// <summary>
+        /// 打开工程
+        /// </summary>
+        /// <param name="files">
+        /// 字符串数组，工程文件路径
+        /// </param>
         public void OpenProject(string[] files) {
             if (files == null) {
                 return;
             }
+            //显示加载提示
             DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), true, "project"));
             try {
+                //加载工程
                 Core.Format.Formats.LoadProject(files);
                 DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
                 this.RaisePropertyChanged(nameof(Title));
@@ -326,6 +343,7 @@ namespace OpenUtau.App.ViewModels {
 
         #region ICmdSubscriber
 
+        //收到命令后的处理
         public void OnNext(UCommand cmd, bool isUndo) {
             if (cmd is ProgressBarNotification progressBarNotification) {
                 Dispatcher.UIThread.InvokeAsync(() => {

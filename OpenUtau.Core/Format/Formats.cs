@@ -42,6 +42,7 @@ namespace OpenUtau.Core.Format {
         }
 
         /// <summary>
+        /// 从文件读取项目到新的UProject对象，由LoadProject和ImportTracks使用。
         /// Read project from files to a new UProject object, used by LoadProject and ImportTracks.
         /// </summary>
         /// <param name="files">Names of the files to be loaded</param>
@@ -75,9 +76,13 @@ namespace OpenUtau.Core.Format {
         }
 
         /// <summary>
+        /// 从文件加载项目。静态方法。
         /// Load project from files.
         /// </summary>
-        /// <param name="files">Names of the files to be loaded</param>
+        /// <param name="files">
+        /// 需要加载的文件的名称
+        /// Names of the files to be loaded
+        /// </param>
         public static void LoadProject(string[] files) {
             UProject project = ReadProject(files);
             if (project != null) {

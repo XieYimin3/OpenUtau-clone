@@ -151,14 +151,18 @@ namespace OpenUtau.App.ViewModels {
             }
         }
 
+        //声库安装任务
         public Task Install() {
             string archiveFilePath = ArchiveFilePath;
             var archiveEncoding = ArchiveEncoding;
             var textEncoding = TextEncoding;
             return Task.Run(() => {
                 try {
+                    //字符串
                     var basePath = PathManager.Inst.SingersInstallPath;
+                    //开始安装
                     var installer = new VoicebankInstaller(basePath, (progress, info) => {
+                        //产生进度条通知
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(progress, info));
                     }, archiveEncoding, textEncoding);
                     installer.Install(archiveFilePath, SingerType);

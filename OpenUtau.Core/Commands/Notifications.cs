@@ -125,6 +125,7 @@ namespace OpenUtau.Core {
         public override string ToString() => $"Seek play position to tick {playPosTick}";
     }
 
+    //进度条型的通知
     public class ProgressBarNotification : UNotification {
         public double Progress;
         public string Info;

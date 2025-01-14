@@ -16,6 +16,7 @@ namespace OpenUtau.Classic {
         const string kInstallTxt = "install.txt";
 
         private string basePath;
+        //进度条
         private readonly Action<double, string> progress;
         private readonly Encoding archiveEncoding;
         private readonly Encoding textEncoding;

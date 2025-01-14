@@ -87,6 +87,12 @@ namespace OpenUtau.Core.Format {
             return false;
         }
 
+        /// <summary>
+        /// 静态方法，创建一个新的项目，返回一个UProject对象
+        /// </summary>
+        /// <returns>
+        /// 
+        /// </returns>
         public static UProject Create() {
             UProject project = new UProject() { Saved = false };
             AddDefaultExpressions(project);

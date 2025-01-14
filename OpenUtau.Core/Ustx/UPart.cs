@@ -14,18 +14,38 @@ using SharpCompress;
 using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
+    /// <summary>
+    /// 分片的抽象基类。
+    /// 主要由UVoicePart（歌声）和UWavePart（伴奏）继承。
+    /// </summary>
     public abstract class UPart {
-        public string name = "New Part";
+        public string name = "New Part"; //分片的默认名称
         public string comment = string.Empty;
-        public int trackNo;
-        public int position = 0;
+        public int trackNo; //分片所在音轨的编号
+        public int position = 0; //分片起始位置
 
+        /// <summary>
+        /// 获取分片的显示名称。
+        /// </summary>
         [YamlIgnore] public virtual string DisplayName { get; }
+        /// <summary>
+        /// 分片长度
+        /// </summary>
         [YamlIgnore] public virtual int Duration { set; get; }
+        /// <summary>
+        /// 分片结束位置
+        /// </summary>
         [YamlIgnore] public int End { get { return position + Duration; } }
 
+        /// <summary>
+        /// 构造，使用的都是默认值。
+        /// </summary>
         public UPart() { }
 
+        /// <summary>
+        /// 抽象方法，获取分片的最小长度。
+        /// <paramref name="project"/>传入工程对象。
+        /// </summary>
         public abstract int GetMinDurTick(UProject project);
 
         public virtual void BeforeSave(UProject project, UTrack track) { }
@@ -36,9 +56,15 @@ namespace OpenUtau.Core.Ustx {
         public abstract UPart Clone();
     }
 
+    /// <summary>
+    /// 歌声分片。
+    /// </summary>
     public class UVoicePart : UPart {
         public int duration;
 
+        /// <summary>
+        /// 先加载音符，再加载表情曲线。
+        /// </summary>
         [YamlMember(Order = 100)]
         public SortedSet<UNote> notes = new SortedSet<UNote>();
         [YamlMember(Order = 101)]

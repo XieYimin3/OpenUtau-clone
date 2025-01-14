@@ -14,7 +14,9 @@ namespace OpenUtau.Core {
 
     public class PathManager : SingletonBase<PathManager> {
         public PathManager() {
+            //根目录
             RootPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            //苹果
             if (OS.IsMacOS()) {
                 string userHome = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
                 DataPath = Path.Combine(userHome, "Library", "OpenUtau");
@@ -27,7 +29,9 @@ namespace OpenUtau.Core {
                         Directory.Delete(oldCache, true);
                     }
                 } catch { }
-            } else if (OS.IsLinux()) {
+            } 
+            //Linux
+            else if (OS.IsLinux()) {
                 string userHome = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
                 string dataHome = Environment.GetEnvironmentVariable("XDG_DATA_HOME");
                 if (string.IsNullOrEmpty(dataHome)) {
@@ -40,17 +44,28 @@ namespace OpenUtau.Core {
                 }
                 CachePath = Path.Combine(cacheHome, "OpenUtau");
                 HomePathIsAscii = true;
-            } else {
+            } 
+            //Windows
+            else {
+                //获取当前进程的主模块文件名的目录信息
                 string exePath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+                //判断是否安装
                 IsInstalled = File.Exists(Path.Combine(exePath, "installed.txt"));
+                //未安装
                 if (!IsInstalled) {
                     DataPath = exePath;
-                } else {
+                } 
+                //已安装
+                else {
+                    //在Windows中为C:\Users\{用户名}\Documents
                     string dataHome = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                    //C:\Users\{用户名}\Documents\OpenUtau
                     DataPath = Path.Combine(dataHome, "OpenUtau");
                 }
+                //C:\Users\{用户名}\Documents\OpenUtau\Cache
                 CachePath = Path.Combine(DataPath, "Cache");
                 HomePathIsAscii = true;
+                //判断是否为ASCII
                 var etor = StringInfo.GetTextElementEnumerator(DataPath);
                 while (etor.MoveNext()) {
                     string s = etor.GetTextElement();

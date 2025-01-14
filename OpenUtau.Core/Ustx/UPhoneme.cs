@@ -44,6 +44,9 @@ namespace OpenUtau.Core.Ustx {
             };
         }
 
+        //接下来是各种验证函数
+
+
         public void Validate(ValidateOptions options, UProject project, UTrack track, UVoicePart part, UNote note) {
             Error = note.Error;
             ValidateDuration(project, part);

@@ -12,17 +12,17 @@ namespace OpenUtau.Core.Ustx {
 
     public class UExpressionDescriptor : IEquatable<UExpressionDescriptor> {
         public string name;
-        public string abbr;
+        public string abbr; //abbr是表情参数的缩写
         public UExpressionType type;
-        public float min;
-        public float max;
-        public float defaultValue;
-        public bool isFlag;
+        public float min; //最小值
+        public float max; //最大值
+        public float defaultValue; //默认值
+        public bool isFlag; //flag是什么？
         public string flag;
         public string[] options;
 
         /// <summary>
-        /// Constructor for Yaml deserialization
+        /// Constructor for Yaml deserialization 用于Yaml反序列化的无参构造函数
         /// </summary>
         public UExpressionDescriptor() { }
 
@@ -68,6 +68,7 @@ namespace OpenUtau.Core.Ustx {
 
         public override string ToString() => $"{abbr.ToUpper()}: {name}";
 
+        //比较接口的实现
         public bool Equals(UExpressionDescriptor other) {
             return this.name == other.name &&
                 this.abbr == other.abbr &&
@@ -81,12 +82,17 @@ namespace OpenUtau.Core.Ustx {
         }
     }
 
+    /// <summary>
+    /// 表情参数
+    /// </summary>
     public class UExpression {
         [YamlIgnore] public UExpressionDescriptor descriptor;
 
         private float _value;
 
+        //可空类型
         public int? index;
+        //abbr是用来干什么的？是表情参数的缩写！
         public string abbr;
         public float value {
             get => _value;
@@ -100,16 +106,20 @@ namespace OpenUtau.Core.Ustx {
         /// </summary>
         public UExpression() { }
 
-        public UExpression(UExpressionDescriptor descriptor) {
+        public UExpression(UExpressionDescriptor descriptor)
+        {
+            // 确保 descriptor 不为 null
             Trace.Assert(descriptor != null);
-            this.descriptor = descriptor;
-            abbr = descriptor.abbr;
+            this.descriptor = descriptor; // 设置 descriptor 属性
+            abbr = descriptor.abbr; // 设置 abbr 属性为 descriptor 的 abbr
         }
 
+        //只有表情名称的构造函数
         public UExpression(string abbr) {
             this.abbr = abbr;
         }
 
+        //克隆，返回一个新的UExpression对象
         public UExpression Clone() {
             return new UExpression(descriptor) {
                 index = index,
@@ -117,6 +127,7 @@ namespace OpenUtau.Core.Ustx {
             };
         }
 
+        //重写ToString方法
         public override string ToString() => $"{abbr.ToUpper()}: {value}";
     }
 }

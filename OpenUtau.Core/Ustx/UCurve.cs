@@ -5,13 +5,16 @@ using System.Linq;
 using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
+    /// <summary>
+    /// 表情曲线
+    /// </summary>
     public class UCurve {
         public const int interval = 5;
 
         [YamlIgnore] public UExpressionDescriptor descriptor;
-        public List<int> xs = new List<int>();
-        public List<int> ys = new List<int>();
-        public string abbr;
+        public List<int> xs = new List<int>(); //xs是时间轴
+        public List<int> ys = new List<int>(); //ys是数值轴
+        public string abbr; //abbr是表情参数的缩写
 
         [YamlIgnore] public bool IsEmpty => xs.Count == 0 || ys.All(y => y == 0);
 
