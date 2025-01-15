@@ -16,6 +16,14 @@ namespace OpenUtau.Core.Format {
         const string midiMatch = "MThd";
         const string ufdataMatch = "\"formatVersion\":";
 
+
+        /// <summary>
+        /// 探测项目文件的格式。
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns>
+        /// 返回项目文件的格式，枚举类型ProjectFormats，可以是Ust, Ustx, Vsq3, Vsq4, Midi, Ufdata。
+        /// </returns>
         public static ProjectFormats DetectProjectFormat(string file) {
             var lines = new List<string>();
             using (var reader = new StreamReader(file)) {
@@ -46,14 +54,19 @@ namespace OpenUtau.Core.Format {
         /// Read project from files to a new UProject object, used by LoadProject and ImportTracks.
         /// </summary>
         /// <param name="files">Names of the files to be loaded</param>
+        /// <returns>
+        /// 返回新的UProject对象，如果文件格式不支持则返回null。
+        /// </returns>
         public static UProject? ReadProject(string[] files){
             if (files.Length < 1) {
                 return null;
             }
+            //检测第一个项目文件的格式
             ProjectFormats format = DetectProjectFormat(files[0]);
             UProject? project = null;
             switch (format) {
                 case ProjectFormats.Ustx:
+                    //从文件加载Ustx项目
                     project = Ustx.Load(files[0]);
                     break;
                 case ProjectFormats.Vsq3:

@@ -29,10 +29,27 @@ namespace OpenUtau.App.ViewModels {
             Pause();
             DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(Project.EndTick));
         }
-        public void PlayOrPause(int tick = -1, int endTick = -1, int trackNo = -1) {
+
+        /// <summary>
+        /// 播放或暂停
+        /// </summary>
+        /// <param name="tick">
+        /// 播放起始位置
+        /// </param>
+        /// <param name="endTick">
+        /// 播放结束位置
+        /// </param>
+        /// <param name="trackNo">
+        /// 播放的轨道编号
+        /// </param>
+        public void PlayOrPause(int tick = -1, int endTick = -1, int trackNo = -1) 
+        {
+            // 调用后端播放管理器的播放或暂停方法
             PlaybackManager.Inst.PlayOrPause(tick: tick, endTick: endTick, trackNo: trackNo);
+            // 如果播放器没有在播放，并且没有开始播放，并且锁定了开始时间
             var lockStartTime = Convert.ToBoolean(Preferences.Default.LockStartTime);
             if (!PlaybackManager.Inst.Playing && !PlaybackManager.Inst.StartingToPlay && lockStartTime) {
+                // 执行指定位置的播放
                 DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(PlaybackManager.Inst.StartTick, true));
             }
         }

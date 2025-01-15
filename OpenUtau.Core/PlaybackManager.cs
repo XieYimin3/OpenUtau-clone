@@ -81,25 +81,60 @@ namespace OpenUtau.Core {
             return sineGen;
         }
 
+        /// <summary>
+        /// 后端播放管理器的播放或暂停方法
+        /// </summary>
+        /// <param name="tick">
+        /// 起始播放位置，-1表示当前位置
+        /// </param>
+        /// <param name="endTick">
+        /// 结束播放位置，-1表示播放到最后
+        /// </param>
+        /// <param name="trackNo">
+        /// 音轨编号，-1表示所有音轨
+        /// </param>
         public void PlayOrPause(int tick = -1, int endTick = -1, int trackNo = -1) {
             if (Playing) {
                 PausePlayback();
             } else {
+                // 调用播放方法
                 Play(
+                    // 以下是Play的传入参数表
+                    // 传入的project为当前工程
                     DocManager.Inst.Project,
+                    // 如果传入的tick为-1，则使用当前播放位置
                     tick: tick == -1 ? DocManager.Inst.playPosTick : tick,
                     endTick: endTick,
                     trackNo: trackNo);
             }
         }
 
+        /// <summary>
+        /// 播放
+        /// </summary>
+        /// <param name="project">
+        /// 要播放的工程
+        /// </param>
+        /// <param name="tick">
+        /// 播放起始位置，-1表示当前位置
+        /// </param>
+        /// <param name="endTick">
+        /// 播放结束位置，-1表示播放到最后
+        /// </param>
+        /// <param name="trackNo">
+        /// 播放的轨道编号，-1表示所有音轨
+        /// </param>
         public void Play(UProject project, int tick, int endTick = -1, int trackNo = -1) {
+            // 如果播放器已暂停，则继续播放
             if (AudioOutput.PlaybackState == PlaybackState.Paused) {
                 AudioOutput.Play();
                 return;
             }
+            // 否则当前是正在播放，那么先停止播放
             AudioOutput.Stop();
+            // 重新渲染
             Render(project, tick, endTick, trackNo);
+            // 然后设置开始播放标志
             StartingToPlay = true;
         }
 

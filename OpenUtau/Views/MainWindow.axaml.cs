@@ -921,10 +921,18 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        /// <summary>
+        /// 当播放按钮被点击时，调用该方法，然后调用PlayOrPause方法
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         void OnPlayOrPause(object sender, RoutedEventArgs args) {
             PlayOrPause();
         }
 
+        /// <summary>
+        /// 播放或暂停方法，然后调用视图模型的PlayOrPause方法
+        /// </summary>
         void PlayOrPause() {
             viewModel.PlaybackViewModel.PlayOrPause();
         }

@@ -145,7 +145,9 @@ namespace OpenUtau.App.ViewModels {
             try {
                 //加载工程
                 Core.Format.Formats.LoadProject(files);
+                //子声库，好像没有用到
                 DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
+                //触发reactiveui的属性变化通知，即Title属性变化
                 this.RaisePropertyChanged(nameof(Title));
             } finally {
                 DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), false, "project"));

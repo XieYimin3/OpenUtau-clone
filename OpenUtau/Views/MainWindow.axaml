@@ -20,10 +20,14 @@
   <Grid>
     <Grid Name="MainGrid" DragDrop.AllowDrop="True" Margin="{Binding $parent[1].WindowDecorationMargin}">
       <Grid RowDefinitions="24,24,1*,20,4" ColumnDefinitions="300,*,24" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+          <!-- 顶部菜单栏 -->
         <Menu Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left"
               Opened="OnMainMenuOpened" Closed="OnMainMenuClosed" PointerExited="OnMainMenuPointerLeave">
+            <!--文件-->
           <MenuItem Header="{DynamicResource menu.file}">
+              <!--新建-->
             <MenuItem Header="{DynamicResource menu.file.new}" InputGesture="Ctrl+N" Click="OnMenuNew"/>
+              <!--从模板新建-->
             <MenuItem Header="{DynamicResource menu.file.newfromtemplate}" ItemsSource="{Binding OpenTemplates}">
               <MenuItem.DataTemplates>
                 <DataTemplate DataType="vm:MenuItemViewModel">
@@ -31,32 +35,54 @@
                 </DataTemplate>
               </MenuItem.DataTemplates>
             </MenuItem>
+              <!--保存模板-->
             <MenuItem Header="{DynamicResource menu.file.savetemplate}" Click="OnMenuSaveTemplate"/>
-            <MenuItem Header="-" Height="1"/>
+              <!--分隔符-->
+              <MenuItem Header="-" Height="1"/>
+              <!--打开-->
             <MenuItem Header="{DynamicResource menu.file.open}" InputGesture="Ctrl+O" Click="OnMenuOpen"/>
-            <MenuItem Header="{DynamicResource menu.file.openrecent}" ItemsSource="{Binding OpenRecent}">
+            <!--最近打开-->
+              <MenuItem Header="{DynamicResource menu.file.openrecent}" ItemsSource="{Binding OpenRecent}">
+                  <!--最近文件具体有哪些-->
               <MenuItem.DataTemplates>
                 <DataTemplate DataType="vm:MenuItemViewModel">
                   <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
                 </DataTemplate>
               </MenuItem.DataTemplates>
             </MenuItem>
+              <!--打开工程位置-->
             <MenuItem Header="{DynamicResource menu.file.openprojectlocation}" Click="OnMenuOpenProjectLocation"/>
+              <!--分隔符-->
             <MenuItem Header="-" Height="1"/>
+              <!--保存-->
             <MenuItem Header="{DynamicResource menu.file.save}" InputGesture="Ctrl+S" Click="OnMenuSave"/>
+              <!--另存为-->
             <MenuItem Header="{DynamicResource menu.file.saveas}"  InputGesture="Ctrl+Shift+S" Click="OnMenuSaveAs"/>
+              <!--分隔符-->
             <MenuItem Header="-" Height="1"/>
+              <!--导入音轨-->
             <MenuItem Header="{DynamicResource menu.file.importtracks}" Click="OnMenuImportTracks"/>
+              <!--导入音频-->
             <MenuItem Header="{DynamicResource menu.file.importaudio}" Click="OnMenuImportAudio"/>
+              <!--导入MIDI-->
             <MenuItem Header="{DynamicResource menu.file.importmidi}" Click="OnMenuImportMidi">
             </MenuItem>
+              <!--分隔符-->
             <MenuItem Header="-" Height="1"/>
+              <!--导出音频-->
             <MenuItem Header="{DynamicResource menu.file.exportaudio}">
+                <!--以下为导出音频的展开-->
+                <!--导出wav-->
               <MenuItem Header="{DynamicResource menu.file.exportwav}" Click="OnMenuExportWav"/>
+                <!--导出wav到-->
               <MenuItem Header="{DynamicResource menu.file.exportwavto}" Click="OnMenuExportWavTo"/>
+                <!--导出缩混-->
               <MenuItem Header="{DynamicResource menu.file.exportmixdown}" Click="OnMenuExportMixdown"/>
             </MenuItem>
+              <!--导出工程-->
             <MenuItem Header="{DynamicResource menu.file.exportproject}">
+                <!--以下为导出工程的展开-->
+                <!--导出ust-->
               <MenuItem Header="{DynamicResource menu.file.exportust}" Click="OnMenuExportUst"/>
               <MenuItem Header="{DynamicResource menu.file.exportustto}" Click="OnMenuExportUstTo"/>
               <MenuItem Header="{DynamicResource menu.file.exportmidi}" Click="OnMenuExportMidi"/>
@@ -64,6 +90,7 @@
               <MenuItem Header="{DynamicResource menu.file.exportds.v2}" Click="OnMenuExportDsV2To"/>
               <MenuItem Header="{DynamicResource menu.file.exportds.v2withoutpitch}" Click="OnMenuExportDsV2WithoutPitchTo"/>
             </MenuItem>
+              <!--打开导出位置-->
             <MenuItem Header="{DynamicResource menu.file.openexportlocation}" Click="OnMenuOpenProjectLocation"/>
           </MenuItem>
           <MenuItem Header="{DynamicResource menu.edit}">
@@ -98,9 +125,12 @@
             <MenuItem Header="{DynamicResource menu.help.logslocation}" Click="OnMenuLogsLocation"/>
           </MenuItem>
         </Menu>
+          <!--三块回放控制-->
         <Panel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="24">
+            <!--节拍与曲速-->
           <Border Classes="playback" Width="72" HorizontalAlignment="Left" Margin="4,0">
             <Grid>
+                <!--节拍-->
               <TextBlock Width="28" HorizontalAlignment="Left"
                          Background="Transparent" PointerPressed="OnEditTimeSignature">
                 <TextBlock.Text>
@@ -110,6 +140,7 @@
                   </MultiBinding>
                 </TextBlock.Text>
               </TextBlock>
+                <!--曲速-->
               <TextBlock Width="42" HorizontalAlignment="Right"
                           Background="Transparent" PointerPressed="OnEditBpm">
                 <TextBlock.Text>
@@ -120,32 +151,39 @@
               </TextBlock>
             </Grid>
           </Border>
+            <!--播放控制-->
           <Border Classes="playback" Width="88" HorizontalAlignment="Center">
             <StackPanel Orientation="Horizontal">
+                <!--回到开始-->
               <Button Command="{Binding PlaybackViewModel.SeekStart}">
                 <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
                       Data="M 0 0 L 2 0 L 2 9 L 0 9 Z M 2 4.5 L 7 0 L 7 9 Z"/>
               </Button>
+                <!--播放或暂停-->
               <Button Click="OnPlayOrPause">
                 <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
                       Data="M 0 0 L 7 6.5 L 0 13 Z"/>
               </Button>
+                <!--暂停-->
               <Button Command="{Binding PlaybackViewModel.Pause}">
                 <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
                       Data="M 0 0 L 2 0 L 2 9 L 0 9 Z M 4 0 L 6 0 L 6 9 L 4 9 Z"/>
               </Button>
+                <!--末尾-->
               <Button Command="{Binding PlaybackViewModel.SeekEnd}">
                 <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
                       Data="M 0 0 L 5 4.5 L 0 9 Z M 5 0 L 7 0 L 7 9 L 5 9 Z"/>
               </Button>
             </StackPanel>
           </Border>
+            <!--回放时间-->
           <Border Classes="playback" Width="72" HorizontalAlignment="Right" Margin="4,0">
             <Grid>
               <TextBlock Text="{Binding Path=PlaybackViewModel.PlayPosTime, StringFormat={}{0:mm\\:ss\\.fff}}"/>
             </Grid>
           </Border>
         </Panel>
+          <!--横向滑动条-->
         <ScrollBar Name="HScrollBar" Classes="music" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                    Margin="0,4,0,4" Orientation="Horizontal" AllowAutoHide="False"
                    DataContext="{Binding TracksViewModel}"
@@ -154,6 +192,7 @@
                    ViewportSize="{Binding ViewportTicks}"
                    LargeChange="{Binding ViewportTicks}"
                    SmallChange="{Binding SmallChangeX}" PointerWheelChanged="HScrollPointerWheelChanged"/>
+          <!--纵向滑动条-->
         <ScrollBar Name="VScrollBar" Classes="music" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                    Margin="4,0,4,0" Orientation="Vertical" AllowAutoHide="False"
                    DataContext="{Binding TracksViewModel}"
@@ -162,12 +201,15 @@
                    ViewportSize="{Binding ViewportTracks}"
                    LargeChange="{Binding ViewportTracks}"
                    SmallChange="{Binding SmallChangeY}" PointerWheelChanged="VScrollPointerWheelChanged"/>
+          <!--走带画布-->
         <Canvas Name="TimelineCanvas" Grid.Row="1" Grid.Column="1"
                 Background="Transparent" ClipToBounds="True"
                 PointerWheelChanged="TimelinePointerWheelChanged"
                 PointerPressed="TimelinePointerPressed"
                 PointerMoved="TimelinePointerMoved"
                 PointerReleased="TimelinePointerReleased">
+            <!--以下是走带画布的内容-->
+            <!--播放位置指示器-->
           <Path Name="PlayPos"
                 Canvas.Left="{Binding TracksViewModel.PlayPosX}"
                 Canvas.Top="0" ZIndex="100" IsHitTestVisible="False"

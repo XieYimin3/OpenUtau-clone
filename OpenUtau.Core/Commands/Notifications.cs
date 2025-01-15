@@ -179,6 +179,10 @@ namespace OpenUtau.Core {
         public override string ToString() => "Singers refreshed.";
     }
 
+    /// <summary>
+    /// 这是一个通知，用于通知UI更新音色映射。
+    /// Voice Colors（也称为子库），一个歌声可以有多种音色，例如Soft、Power 和 Base。
+    /// </summary>
     public class VoiceColorRemappingNotification : UNotification {
         public int TrackNo;
         public bool Validate;
