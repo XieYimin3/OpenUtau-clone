@@ -57,7 +57,7 @@ namespace OpenUtau.App.Views {
             //设置主窗口的数据上下文为MainWindowViewModel
             DataContext = viewModel = new MainWindowViewModel();
 
-            
+            // 初始化项目
             viewModel.InitProject();
             viewModel.AddTempoChangeCmd = ReactiveCommand.Create<int>(tick => AddTempoChange(tick));
             viewModel.DelTempoChangeCmd = ReactiveCommand.Create<int>(tick => DelTempoChange(tick));

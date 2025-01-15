@@ -11,6 +11,7 @@ namespace OpenUtau.Core.Format {
     public class Ustx {
         public static readonly Version kUstxVersion = new Version(0, 6);
 
+        // 各种表情参数的缩写
         public const string DYN = "dyn";
         public const string PITD = "pitd";
         public const string CLR = "clr";

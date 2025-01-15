@@ -7,8 +7,26 @@ using OpenUtau.Classic;
 using OpenUtau.Core;
 using Serilog;
 
+
+/*
+SplashWindow类是开屏窗口
+    1.构造函数中初始化窗口；
+    2.在窗口打开时触发事件；
+    3.在事件中调用Start方法；
+    4.在Start方法中初始化OpenUtau；
+    5.在初始化OpenUtau后初始化音频；
+    6.接下来让我们转到MainWindow类......
+*/
+
+
 namespace OpenUtau.App.Views {
+    /// <summary>
+    /// 开屏窗口
+    /// </summary>
     public partial class SplashWindow : Window {
+        /// <summary>
+        /// 构造函数
+        /// </summary>
         public SplashWindow() {
             InitializeComponent();
             if (ThemeManager.IsDarkMode) {
@@ -18,9 +36,15 @@ namespace OpenUtau.App.Views {
                 LogoTypeLight.IsVisible = true;
                 LogoTypeDark.IsVisible = false;
             }
+            //窗口打开时触发事件如下
             this.Opened += SplashWindow_Opened;
         }
 
+        /// <summary>
+        /// 其实也属于构造函数的一部分
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SplashWindow_Opened(object? sender, System.EventArgs e) {
             if (Screens.Primary == null) {
                 return;

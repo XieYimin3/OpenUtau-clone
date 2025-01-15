@@ -16,22 +16,39 @@ using OpenUtau.Core;
 using Serilog;
 using YamlDotNet.Core.Tokens;
 
+
+/*
+App类是该程序的入口
+    1.先执行重写了的初始化方法；
+    2.再执行重写了的OnFrameworkInitializationCompleted方法；
+    3.在OnFrameworkInitializationCompleted方法中构造开屏窗口；
+    4.接下来让我们转到SplashWindow类......
+*/
+
 namespace OpenUtau.App {
+    /// <summary>
+    /// 应用程序入口
+    /// </summary>
     public class App : Application {
+        /// <summary>
+        /// 重写了初始化方法
+        /// </summary>
         public override void Initialize() {
             Log.Information("Initializing application.");
             AvaloniaXamlLoader.Load(this);
             InitializeCulture();
             InitializeTheme();
+            //程序初始化完成，此时还没有出现窗口
             Log.Information("Initialized application.");
         }
 
         public override void OnFrameworkInitializationCompleted() {
             Log.Information("Framework initialization completed.");
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
+                // 构造开屏窗口
                 desktop.MainWindow = new SplashWindow();
             }
-
+            //此时还没有出现窗口
             base.OnFrameworkInitializationCompleted();
         }
 

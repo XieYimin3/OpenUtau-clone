@@ -54,6 +54,9 @@ namespace OpenUtau.App.ViewModels {
         private ObservableCollectionExtended<MenuItemViewModel> openTemplates
             = new ObservableCollectionExtended<MenuItemViewModel>();
 
+        /// <summary>
+        /// 构造函数
+        /// </summary>
         public MainWindowViewModel() {
             PlaybackViewModel = new PlaybackViewModel();
             TracksViewModel = new TracksViewModel();
@@ -91,9 +94,13 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.Redo();
         }
 
+        /// <summary>
+        /// 初始化工程
+        /// </summary>
         public void InitProject() {
             //命令行参数
             var args = Environment.GetCommandLineArgs();
+            //如果命令行参数长度为2且第二个参数是文件路径，但是很少使用命令行来打开文件
             if (args.Length == 2 && File.Exists(args[1])) {
                 try {
                     //加载工程
@@ -106,6 +113,7 @@ namespace OpenUtau.App.ViewModels {
                     DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
                 }
             }
+            //一般情况下创建一个新的工程
             NewProject();
         }
 
@@ -115,6 +123,7 @@ namespace OpenUtau.App.ViewModels {
         public void NewProject() {
             //默认模板路径，Windows下为C:\Users\用户名\Documents\OpenUtau\Templates\default.ustx
             var defaultTemplate = Path.Combine(PathManager.Inst.TemplatesPath, "default.ustx");
+            // 一般情况下，defaultTemplate是不存在的
             if (File.Exists(defaultTemplate)) {
                 try {
                     OpenProject(new[] { defaultTemplate });
@@ -126,7 +135,7 @@ namespace OpenUtau.App.ViewModels {
                     DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
                 }
             }
-            //创建一个新的工程
+            //一般是创建一个空白工程
             DocManager.Inst.ExecuteCmd(new LoadProjectNotification(Core.Format.Ustx.Create()));
         }
 

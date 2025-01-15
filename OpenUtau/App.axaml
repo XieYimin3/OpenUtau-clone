@@ -6,6 +6,7 @@
     <local:ViewLocator/>
   </Application.DataTemplates>
   <Application.Resources>
+      <!--设置多语言资源-->
     <ResourceDictionary>
       <ResourceInclude x:Key="strings-en-US" Source="/Strings/Strings.axaml"/>
       <ResourceInclude x:Key="strings-de-DE" Source="/Strings/Strings.de-DE.axaml"/>
@@ -32,6 +33,7 @@
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>
+    <!---->
   <Application.Styles>
     <FluentTheme />
     <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
