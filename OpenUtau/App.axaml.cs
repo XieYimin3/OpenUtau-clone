@@ -23,6 +23,7 @@ App类是该程序的入口
     2.再执行重写了的OnFrameworkInitializationCompleted方法；
     3.在OnFrameworkInitializationCompleted方法中构造开屏窗口；
     4.接下来让我们转到SplashWindow类......
+    5.请打开OpenUtau/Views/SplashWindow.axaml.cs
 */
 
 namespace OpenUtau.App {
@@ -31,7 +32,7 @@ namespace OpenUtau.App {
     /// </summary>
     public class App : Application {
         /// <summary>
-        /// 重写了初始化方法
+        /// 重写了Avalonia的初始化方法
         /// </summary>
         public override void Initialize() {
             Log.Information("Initializing application.");
@@ -42,6 +43,9 @@ namespace OpenUtau.App {
             Log.Information("Initialized application.");
         }
 
+        /// <summary>
+        /// 重写了Avalonia的初始化完成方法
+        /// </summary>
         public override void OnFrameworkInitializationCompleted() {
             Log.Information("Framework initialization completed.");
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
@@ -49,9 +53,13 @@ namespace OpenUtau.App {
                 desktop.MainWindow = new SplashWindow();
             }
             //此时还没有出现窗口
+            //执行基类的OnFrameworkInitializationCompleted方法，虽然是空方法，但是Opend已经被附加了事件
             base.OnFrameworkInitializationCompleted();
         }
 
+        /// <summary>
+        /// 初始化语言
+        /// </summary>
         public void InitializeCulture() {
             Log.Information("Initializing culture.");
             string sysLang = CultureInfo.InstalledUICulture.Name;

@@ -26,6 +26,14 @@ using ReactiveUI;
 using Serilog;
 using Point = Avalonia.Point;
 
+/*
+当MainWindow被构造时，会：
+1. 初始化主窗口及其组件；
+2. 设置主窗口的数据上下文为MainWindowViewModel；
+3. 初始化工程（调用viewModel的InitProject方法）；
+让我们来看看MainWindowViewModel的InitProject方法。请打开OpenUtau/ViewModels/MainWindowViewModel.cs文件，找到InitProject方法：
+*/
+
 namespace OpenUtau.App.Views {
     public partial class MainWindow : Window, ICmdSubscriber {
         private readonly KeyModifiers cmdKey =
@@ -47,6 +55,10 @@ namespace OpenUtau.App.Views {
         private readonly ReactiveCommand<UPart, Unit> PartReplaceAudioCommand;
         private readonly ReactiveCommand<UPart, Unit> PartTranscribeCommand;
 
+
+        /// <summary>
+        /// 构造函数
+        /// </summary>
         public MainWindow() {
             //创建主窗口
             Log.Information("Creating main window.");
@@ -57,22 +69,29 @@ namespace OpenUtau.App.Views {
             //设置主窗口的数据上下文为MainWindowViewModel
             DataContext = viewModel = new MainWindowViewModel();
 
-            // 初始化项目
+            // 初始化工程
             viewModel.InitProject();
             viewModel.AddTempoChangeCmd = ReactiveCommand.Create<int>(tick => AddTempoChange(tick));
             viewModel.DelTempoChangeCmd = ReactiveCommand.Create<int>(tick => DelTempoChange(tick));
             viewModel.AddTimeSigChangeCmd = ReactiveCommand.Create<int>(bar => AddTimeSigChange(bar));
             viewModel.DelTimeSigChangeCmd = ReactiveCommand.Create<int>(bar => DelTimeSigChange(bar));
 
+            //初始化定时器
             timer = new DispatcherTimer(
+                //每15毫秒触发一次
                 TimeSpan.FromMilliseconds(15),
+                //优先级为Normal
                 DispatcherPriority.Normal,
+                //每次触发时调用UpdatePlayPos方法
                 (sender, args) => PlaybackManager.Inst.UpdatePlayPos());
+            //启动定时器
             timer.Start();
 
+            //初始化自动保存定时器
             autosaveTimer = new DispatcherTimer(
                 TimeSpan.FromSeconds(30),
                 DispatcherPriority.Normal,
+                //每次触发时调用DocManager.Inst.AutoSave方法
                 (sender, args) => DocManager.Inst.AutoSave());
             autosaveTimer.Start();
 
@@ -83,9 +102,11 @@ namespace OpenUtau.App.Views {
 
             AddHandler(DragDrop.DropEvent, OnDrop);
 
+            //订阅DocManager的事件
             DocManager.Inst.AddSubscriber(this);
 
             Log.Information("Main window checking Update.");
+            //检查更新
             UpdaterDialog.CheckForUpdate(
                 dialog => dialog.Show(this),
                 () => (Application.Current?.ApplicationLifetime as IControlledApplicationLifetime)?.Shutdown(),
@@ -536,6 +557,11 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        /// <summary>
+        /// “歌手”按钮的事件处理函数，调用OpenSingersWindow方法
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         void OnMenuSingers(object sender, RoutedEventArgs args) {
             OpenSingersWindow();
         }
@@ -589,29 +615,43 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        /// <summary>
+        /// “安装歌手”按钮的事件处理函数。
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         async void OnMenuInstallSinger(object sender, RoutedEventArgs args) {
+            //用户选择声库压缩包文件
             var file = await FilePicker.OpenFileAboutSinger(
                 this, "menu.tools.singer.install", FilePicker.ArchiveFiles);
             if (file == null) {
                 return;
             }
             try {
+                //如果文件名以.vogen结尾，调用VogenSingerInstaller.Install方法安装声库
                 if (file.EndsWith(Core.Vogen.VogenSingerInstaller.FileExt)) {
                     Core.Vogen.VogenSingerInstaller.Install(file);
                     return;
                 }
+                //如果文件名以.oudep结尾，调用DependencyInstaller.Install方法安装依赖
                 if (file.EndsWith(DependencyInstaller.FileExt)) {
                     DependencyInstaller.Install(file);
                     return;
                 }
-
+                //剩下的是一般的声库压缩包
+                //调用SingerSetupDialog打开声库安装对话框
                 var setup = new SingerSetupDialog() {
+                    //设置对话框的数据上下文为SingerSetupViewModel
                     DataContext = new SingerSetupViewModel() {
+                        //同时设置SingerSetupViewModel的ArchiveFilePath 属性 为用户选择的文件
                         ArchiveFilePath = file,
                     },
                 };
+                //不关心对话框的返回值
+                //我们需要转到OpenUtau/Views/SingerSetupDialog.axaml.cs文件查看SingerSetupDialog的实现
                 _ = setup.ShowDialog(this);
                 if (setup.Position.Y < 0) {
+                    //避免对话框被遮挡
                     setup.Position = setup.Position.WithY(0);
                 }
             } catch (Exception e) {

@@ -34,6 +34,10 @@ namespace OpenUtau.Core.DiffSinger
 
         private bool _singerLoaded;
 
+        /// <summary>
+        /// 公有方法，设置歌手，是对私有方法_executeSetSinger的封装
+        /// </summary>
+        /// <param name="singer"></param>
         public override void SetSinger(USinger singer) {
             if (_singerLoaded && singer == this.singer) return;
             try {
@@ -44,6 +48,11 @@ namespace OpenUtau.Core.DiffSinger
             }
         }
 
+        /// <summary>
+        /// 私有方法，设置歌手
+        /// </summary>
+        /// <param name="singer"></param>
+        /// <returns></returns>
         private bool _executeSetSinger(USinger singer) {
             this.singer = singer;
             if (singer == null) {
@@ -59,6 +68,7 @@ namespace OpenUtau.Core.DiffSinger
                 rootPath = singer.Location;
             }
             //Load Config
+            //加载dsconfig.yaml文件
             var configPath = Path.Join(rootPath, "dsconfig.yaml");
             try {
                 var configTxt = File.ReadAllText(configPath);
@@ -290,7 +300,11 @@ namespace OpenUtau.Core.DiffSinger
             }
             return token;
         }
-        
+
+        /// <summary>
+        /// 处理二维音符数组phrase，每一行代表什么？
+        /// </summary>
+        /// <param name="phrase"></param>
         protected override void ProcessPart(Note[][] phrase) {
             float padding = 500f;//Padding time for consonants at the beginning of a sentence, ms
             float frameMs = dsConfig.frameMs();

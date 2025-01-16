@@ -85,6 +85,15 @@ namespace OpenUtau.Api {
             }, null, CancellationToken.None, TaskCreationOptions.None, mainScheduler);
         }
 
+        /// <summary>
+        /// 处理一个音符序列的音素化请求。
+        /// </summary>
+        /// <param name="request">
+        /// 音素化请求。
+        /// </param>
+        /// <returns>
+        /// 返回音素化结果。
+        /// </returns>
         static PhonemizerResponse Phonemize(PhonemizerRequest request) {
             var notes = request.notes;
             var phonemizer = request.phonemizer;

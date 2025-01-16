@@ -93,15 +93,20 @@
               <!--打开导出位置-->
             <MenuItem Header="{DynamicResource menu.file.openexportlocation}" Click="OnMenuOpenProjectLocation"/>
           </MenuItem>
+            <!--编辑-->
           <MenuItem Header="{DynamicResource menu.edit}">
             <MenuItem Header="{DynamicResource menu.edit.undo}" InputGesture="Ctrl+Z" Command="{Binding Undo}"/>
             <MenuItem Header="{DynamicResource menu.edit.redo}" InputGesture="Ctrl+Y" Command="{Binding Redo}"/>
           </MenuItem>
+            <!--工程-->
           <MenuItem Header="{DynamicResource menu.project}">
             <MenuItem Header="{DynamicResource menu.project.expressions}" Click="OnMenuExpressionss"/>
             <MenuItem Header="{DynamicResource menu.project.remaptimeaxis}" Click="OnMenuRemapTimeaxis"/>
           </MenuItem>
+            <!--工具-->
           <MenuItem Header="{DynamicResource menu.tools}">
+              <!--以下为工具的展开-->
+              <!--调整界面布局-->
             <MenuItem Header="{DynamicResource menu.tools.layout}">
               <MenuItem Header="{DynamicResource menu.tools.layout.vsplit11}" Click="OnMenuLayoutVSplit11"/>
               <MenuItem Header="{DynamicResource menu.tools.layout.vsplit12}" Click="OnMenuLayoutVSplit12"/>
@@ -110,11 +115,17 @@
               <MenuItem Header="{DynamicResource menu.tools.layout.hsplit12}" Click="OnMenuLayoutHSplit12"/>
               <MenuItem Header="{DynamicResource menu.tools.layout.hsplit13}" Click="OnMenuLayoutHSplit13"/>
             </MenuItem>
+              <!--清除缓存-->
             <MenuItem Header="{Binding ClearCacheHeader}" Click="OnMenuClearCache"/>
+              <!--打开调试窗口-->
             <MenuItem Header="{DynamicResource menu.tools.debugwindow}" Click="OnMenuDebugWindow"/>
+              <!--打开语音学助手-->
             <MenuItem Header="{DynamicResource phoneticassistant.caption}" Click="OnMenuPhoneticAssistant"/>
+              <!--打开歌手管理-->
             <MenuItem Header="{DynamicResource menu.tools.singers}" Click="OnMenuSingers"/>
+              <!--安装歌手-->
             <MenuItem Header="{DynamicResource menu.tools.singer.install}" Click="OnMenuInstallSinger"/>
+              <!--安装依赖-->
             <MenuItem Header="{DynamicResource menu.tools.dependency.install}" Click="OnMenuInstallDependency"/>
             <MenuItem Header="{DynamicResource menu.tools.prefs}" Click="OnMenuPreferences"/>
           </MenuItem>

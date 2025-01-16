@@ -6,6 +6,9 @@ using OpenUtau.App.ViewModels;
 using Serilog;
 
 namespace OpenUtau.App.Views {
+    /// <summary>
+    /// 歌手安装对话框
+    /// </summary>
     public partial class SingerSetupDialog : Window {
         public SingerSetupDialog() {
             InitializeComponent();

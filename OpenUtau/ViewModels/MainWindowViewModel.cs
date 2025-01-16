@@ -94,13 +94,16 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.Redo();
         }
 
+        /*
+        其实绝大多数情况下只调用了NewProject()，所以让我们看看NewProject()方法。
+         */
         /// <summary>
         /// 初始化工程
         /// </summary>
         public void InitProject() {
             //命令行参数
             var args = Environment.GetCommandLineArgs();
-            //如果命令行参数长度为2且第二个参数是文件路径，但是很少使用命令行来打开文件
+            //判断如果命令行参数长度为2且第二个参数是文件路径。但是很少有人使用命令行来打开文件
             if (args.Length == 2 && File.Exists(args[1])) {
                 try {
                     //加载工程
@@ -113,10 +116,13 @@ namespace OpenUtau.App.ViewModels {
                     DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
                 }
             }
-            //一般情况下创建一个新的工程
+            //多数情况下创建一个新的工程
             NewProject();
         }
 
+        /*
+        本方法的关键在最后一行，新建空白工程。
+         */
         /// <summary>
         /// 创建一个新的工程，如果默认模板存在则加载默认模板，否则创建一个空白工程
         /// </summary>
@@ -153,6 +159,7 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), true, "project"));
             try {
                 //加载工程
+                //在这一步之前，应该有调用过了OpenOtau.Core.DiffSinger.DiffSingerBasePhonemizer.SetSinger方法，否则dsConfig为null，但是断点调试告诉我事实上不是这样的。
                 Core.Format.Formats.LoadProject(files);
                 //子声库，好像没有用到
                 DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
