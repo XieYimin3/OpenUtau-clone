@@ -24,6 +24,9 @@ namespace OpenUtau.App.Views {
         WaveFile? wav;
         string? wavPath;
 
+        /// <summary>
+        /// 歌手管理窗口
+        /// </summary>
         public SingersDialog() {
             InitializeComponent();
             DocManager.Inst.AddSubscriber(this);

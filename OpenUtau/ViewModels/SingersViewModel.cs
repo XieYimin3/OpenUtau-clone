@@ -20,7 +20,9 @@ using Serilog;
 
 namespace OpenUtau.App.ViewModels {
     public class SingersViewModel : ViewModelBase {
+        //所有歌手
         public IEnumerable<USinger> Singers => SingerManager.Inst.SingerGroups.Values.SelectMany(l => l);
+        //选中的歌手
         [Reactive] public USinger? Singer { get; set; }
         [Reactive] public Bitmap? Avatar { get; set; }
         [Reactive] public string? Info { get; set; }

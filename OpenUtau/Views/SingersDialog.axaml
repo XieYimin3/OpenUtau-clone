@@ -11,6 +11,8 @@
         Title="{DynamicResource singers.caption}" Width="1050" MinWidth="1050" MinHeight="640"
         WindowStartupLocation="CenterScreen"
         ExtendClientAreaToDecorationsHint="False" KeyDown="OnKeyDown">
+    <!--歌手管理窗口-->
+    <!--设置上下文-->
   <Design.DataContext>
     <vm:SingersViewModel/>
   </Design.DataContext>
@@ -32,7 +34,10 @@
       <ColumnDefinition Width="10"/>
       <ColumnDefinition Width="1*" MinWidth="340"/>
     </Grid.ColumnDefinitions>
-    <Image Grid.Row="0" Width="100" Height="100" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Source="{Binding Avatar}"/>
+
+      <!--歌手图片-->
+      <Image Grid.Row="0" Width="100" Height="100" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Source="{Binding Avatar}"/>
+      <!--选中歌手-->
     <ComboBox Grid.Row="0" x:Name="name" HorizontalAlignment="Stretch" Margin="120,10,0,0" VerticalAlignment="Top"
               ItemsSource="{Binding Singers}" SelectedItem="{Binding Singer}" SelectionChanged="OnSelectedSingerChanged">
       <ComboBox.ItemTemplate>
@@ -41,6 +46,7 @@
         </DataTemplate>
       </ComboBox.ItemTemplate>    
     </ComboBox>
+      
     <Border Grid.Row="0" Margin="120,40,0,30">
       <ScrollViewer>
         <TextBlock x:Name="info" TextWrapping="Wrap" Text="{Binding Info}"/>

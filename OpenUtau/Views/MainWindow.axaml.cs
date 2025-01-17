@@ -578,12 +578,17 @@ namespace OpenUtau.App.Views {
             return null;
         }
 
+        /// <summary>
+        /// 打开歌手管理窗口
+        /// </summary>
         public void OpenSingersWindow() {
+            //获取当前应用程序的生命周期
             var lifetime = Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
             if (lifetime == null) {
                 return;
             }
 
+            //显示加载中对话框
             MessageBox.ShowLoading(this);
             var dialog = lifetime.Windows.FirstOrDefault(w => w is SingersDialog);
             try {

@@ -16,7 +16,7 @@
   <Design.DataContext>
     <vm:SingerSetupViewModel/>
   </Design.DataContext>
-    <!--多步骤控件-->
+    <!--主体为多步骤控件-->
   <Carousel SelectedIndex="{Binding Step}" Margin="{Binding $parent.WindowDecorationMargin}">
     <!--Archive File Encoding-->
       <!--第一步：选择压缩包编码-->
@@ -26,8 +26,11 @@
         <RowDefinition Height="1*"/>
         <RowDefinition Height="40"/>
       </Grid.RowDefinitions>
+        
       <StackPanel Grid.Row="0" Margin="10" Spacing="10" Orientation="Horizontal" HorizontalAlignment="Right">
+          <!--"压缩包编码"-->
         <TextBlock Margin="0,1,0,0" Text="{DynamicResource singersetup.archivefileencoding}"/>
+          <!--组合框控件，选择压缩包编码-->
         <ComboBox Grid.Row="0" Width="240" Margin="0" ItemsSource="{Binding Encodings}" SelectedItem="{Binding ArchiveEncoding}">
           <ComboBox.ItemTemplate>
             <DataTemplate>
@@ -36,7 +39,10 @@
           </ComboBox.ItemTemplate>
         </ComboBox>
       </StackPanel>
+        
+        <!--压缩包文件名样本-->
       <ListBox Grid.Row="1" Margin="10,0" Focusable="False" ItemsSource="{Binding TextItems}"/>
+        
       <Grid Grid.Row="2" Margin="10" HorizontalAlignment="Stretch">
         <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Spacing="10">
           <TextBlock Margin="0,1,0,0" Text="{DynamicResource singersetup.archivefileencoding.prompt}"></TextBlock>
@@ -46,6 +52,9 @@
         </StackPanel>
       </Grid>
     </Grid>
+      
+      
+      
     <!--Text File Encoding-->
       <!--第二步：选择文本文件编码-->
     <Grid>
@@ -71,7 +80,7 @@
         <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Spacing="10">
             <!--prompt提示语-->
           <TextBlock Margin="0,1,0,0" Text="{DynamicResource singersetup.textfileencoding.prompt}"/>
-            <!--如果未能识别歌手，还需要选择歌手类型-->
+            <!--如果缺失信息而未能识别歌手，还需要选择歌手类型-->
           <Button Margin="0" Command="{Binding Next}" IsVisible="{Binding MissingInfo}"
                   Content="{DynamicResource singersetup.next}"/>
             <!--如果识别到歌手，直接安装-->

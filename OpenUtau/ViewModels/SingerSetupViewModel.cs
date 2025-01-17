@@ -27,18 +27,28 @@ namespace OpenUtau.App.ViewModels {
             Encoding.GetEncoding("Windows-1252"),
             Encoding.GetEncoding("macintosh"),
         };
+
+        //压缩包编码
         [Reactive] public Encoding ArchiveEncoding { get; set; }
+        //文本编码
         [Reactive] public Encoding TextEncoding { get; set; }
+        //是否缺少歌手信息
         [Reactive] public bool MissingInfo { get; set; }
+        //支持的歌手类型
         public string[] SingerTypes { get; set; } = new[] { "utau", "enunu", "diffsinger" };
         [Reactive] public string SingerType { get; set; }
 
         private ObservableCollectionExtended<string> textItems;
 
+        /// <summary>
+        /// 初始构造函数
+        /// </summary>
+        /// <exception cref="MessageCustomizableException"></exception>
         public SingerSetupViewModel() {
 #if DEBUG
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 #endif
+            //设置各种默认值
             SingerType = SingerTypes[0];
             ArchiveEncoding = Encodings[0];
             TextEncoding = Encodings[0];
@@ -46,7 +56,8 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.ArchiveFilePath)
                 .Subscribe(_ => {
                     if (!string.IsNullOrEmpty(ArchiveFilePath)) {
-                        if(IsEncrypted(ArchiveFilePath)) {
+                        //排除加密的压缩包
+                        if (IsEncrypted(ArchiveFilePath)) {
                             throw new MessageCustomizableException(
                                 "Encrypted archive file isn't supported",
                                 "<translate:errors.encryptedarchive>", 
@@ -68,14 +79,23 @@ namespace OpenUtau.App.ViewModels {
                 .Subscribe(_ => RefreshTextItems());
         }
 
+        /// <summary>
+        /// 后退，上一步
+        /// </summary>
         public void Back() {
             Step--;
         }
 
+        /// <summary>
+        /// 前进，下一步
+        /// </summary>
         public void Next() {
             Step++;
         }
 
+        /// <summary>
+        /// 刷新压缩包编码样本
+        /// </summary>
         private void RefreshArchiveItems() {
             if (Step != 0) {
                 return;
@@ -95,24 +115,38 @@ namespace OpenUtau.App.ViewModels {
             }
         }
 
+        /// <summary>
+        /// 判断压缩包是否加密
+        /// </summary>
+        /// <param name="archiveFilePath">要检查的压缩文件路径</param>
+        /// <returns>true表示加密</returns>
         private bool IsEncrypted(string archiveFilePath) {
             using (var archive = ArchiveFactory.Open(archiveFilePath)) {
                 return archive.Entries.Any(e => e.IsEncrypted);
             }
         }
 
+        /// <summary>
+        /// 从压缩包解出character.yaml以获取歌手信息
+        /// </summary>
+        /// <param name="archiveFilePath"></param>
+        /// <returns>空返回表示压缩包中没有那个文件或者配置解析失败</returns>
         private VoicebankConfig? LoadCharacterYaml(string archiveFilePath) {
             using (var archive = ArchiveFactory.Open(archiveFilePath)) {
                 var entry = archive.Entries.FirstOrDefault(e => Path.GetFileName(e.Key)=="character.yaml");
                 if (entry == null) {
                     return null;
                 }
+                //打开文件流，并获取配置信息
                 using (var stream = entry.OpenEntryStream()) {
                     return VoicebankConfig.Load(stream);
                 }
             }
         }
 
+        /// <summary>
+        /// 刷新文本编码样本
+        /// </summary>
         private void RefreshTextItems() {
             if (Step != 1) {
                 return;
@@ -152,23 +186,34 @@ namespace OpenUtau.App.ViewModels {
         }
 
         //声库安装任务
+        /// <summary>
+        /// 关键的声库安装任务
+        /// </summary>
+        /// <returns></returns>
         public Task Install() {
+            //将各种参数转化为局部变量
             string archiveFilePath = ArchiveFilePath;
             var archiveEncoding = ArchiveEncoding;
             var textEncoding = TextEncoding;
             return Task.Run(() => {
                 try {
                     //字符串
+                    //获取声库安装路径
                     var basePath = PathManager.Inst.SingersInstallPath;
-                    //开始安装
+                    //开始安装(bushi
+                    //关键：初始化安装器
                     var installer = new VoicebankInstaller(basePath, (progress, info) => {
-                        //产生进度条通知
+                        //产生进度条通知，将一个可以发送进度通知的命令执行器传递给安装器，以便安装器更新进度条
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(progress, info));
                     }, archiveEncoding, textEncoding);
+                    //关键：开始安装
                     installer.Install(archiveFilePath, SingerType);
                 } finally {
+                    //安装完成后
                     new Task(() => {
+                        //重置进度条
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ""));
+                        //通知歌手已更改
                         DocManager.Inst.ExecuteCmd(new SingersChangedNotification());
                     }).Start(DocManager.Inst.MainScheduler);
                 }
