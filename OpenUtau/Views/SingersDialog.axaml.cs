@@ -25,7 +25,7 @@ namespace OpenUtau.App.Views {
         string? wavPath;
 
         /// <summary>
-        /// 歌手管理窗口
+        /// 歌手管理窗口构造函数
         /// </summary>
         public SingersDialog() {
             InitializeComponent();

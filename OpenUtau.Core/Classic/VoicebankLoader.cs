@@ -25,6 +25,9 @@ namespace OpenUtau.Classic {
         }
     }
 
+    /// <summary>
+    /// 传统歌手声库加载器
+    /// </summary>
     public class VoicebankLoader {
         public const string kCharTxt = "character.txt";
         public const string kCharYaml = "character.yaml";
@@ -37,26 +40,40 @@ namespace OpenUtau.Classic {
 
         public static bool IsTest = false;
 
+        /// <summary>
+        /// 构造函数，用于传入声库安装路径
+        /// </summary>
+        /// <param name="basePath"></param>
         public VoicebankLoader(string basePath) {
             this.basePath = basePath;
         }
 
+        /// <summary>
+        /// 查找所有传统歌手声库
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Voicebank> SearchAll() {
+            //Voicebank 类型的列表，用于存放搜索到的声库
             List<Voicebank> result = new List<Voicebank>();
+            //如果安装路径不存在，则返回空列表
             if (!Directory.Exists(basePath)) {
                 return result;
             }
             IEnumerable<string> files;
+            //如果设置了深度搜索，则搜索所有子文件夹
             if (Preferences.Default.LoadDeepFolderSinger) {
                 files = Directory.EnumerateFiles(basePath, kCharTxt, SearchOption.AllDirectories);
             } else {
                 // TopDirectoryOnly
+                // 否则只搜索当前顶级文件夹
                 files = Directory.GetDirectories(basePath)
                     .SelectMany(path => Directory.EnumerateFiles(path, kCharTxt));
             }
+            //遍历搜索到的文件，将其加载后添加到 result 中
             result.AddRange(files
                 .Select(filePath => {
                     try {
+                        // 将文件路径转换为 Voicebank 对象
                         var voicebank = new Voicebank();
                         LoadInfo(voicebank, filePath, basePath);
                         return voicebank;
@@ -75,6 +92,14 @@ namespace OpenUtau.Classic {
             LoadOtoSets(voicebank, Path.GetDirectoryName(voicebank.File));
         }
 
+        /// <summary>
+        /// 静态的
+        /// </summary>
+        /// <param name="voicebank">
+        /// 一般传入一个空白对象，该函数会将其填充
+        /// </param>
+        /// <param name="filePath"></param>
+        /// <param name="basePath"></param>
         public static void LoadInfo(Voicebank voicebank, string filePath, string basePath) {
             var dir = Path.GetDirectoryName(filePath);
             var yamlFile = Path.Combine(dir, kCharYaml);

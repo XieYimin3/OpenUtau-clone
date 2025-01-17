@@ -12,8 +12,13 @@ using OpenUtau.Core.Util;
 using Serilog;
 
 namespace OpenUtau.Core {
+    /// <summary>
+    /// 歌手管理器，该类被确保为单例
+    /// </summary>
     public class SingerManager : SingletonBase<SingerManager> {
+        //所有歌手
         public Dictionary<string, USinger> Singers { get; private set; } = new Dictionary<string, USinger>();
+        //所有歌手按类型分组
         public Dictionary<USingerType, List<USinger>> SingerGroups { get; private set; } = new Dictionary<USingerType, List<USinger>>();
 
         private readonly ConcurrentQueue<USinger> reloadQueue = new ConcurrentQueue<USinger>();
@@ -25,16 +30,22 @@ namespace OpenUtau.Core {
             SearchAllSingers();
         }
 
+        /// <summary>
+        /// 查找所有歌手
+        /// </summary>
         public void SearchAllSingers() {
             Log.Information("Searching singers.");
             Directory.CreateDirectory(PathManager.Inst.SingersPath);
             var stopWatch = Stopwatch.StartNew();
+            //局部变量 singers 临时存放从 ClassicSingerLoader.FindAllSingers() 和 Vogen.VogenSingerLoader.FindAllSingers() 获取的歌手
             var singers = ClassicSingerLoader.FindAllSingers()
                 .Concat(Vogen.VogenSingerLoader.FindAllSingers())
                 .Distinct();
+            //将 singers 转换为字典属性 Singers 
             Singers = singers
                 .ToLookup(s => s.Id)
                 .ToDictionary(g => g.Key, g => g.First());
+            //将 singers 按类型分组
             SingerGroups = singers
                 .GroupBy(s => s.SingerType)
                 .ToDictionary(s => s.Key, s => s.LocalizedOrderBy(singer => singer.LocalizedName).ToList());
@@ -42,6 +53,11 @@ namespace OpenUtau.Core {
             Log.Information($"Search all singers: {stopWatch.Elapsed}");
         }
 
+        /// <summary>
+        /// 根据名称获取歌手对象
+        /// </summary>
+        /// <param name="name">歌手名</param>
+        /// <returns></returns>
         public USinger GetSinger(string name) {
             Log.Information($"Attach singer to track: {name}");
             name = name.Replace("%VOICE%", "");
@@ -106,6 +122,10 @@ namespace OpenUtau.Core {
         }
 
         //Check which singers are in use and free memory for those that are not
+        /// <summary>
+        /// 释放未使用的歌手，以减少内存占用
+        /// </summary>
+        /// <param name="project"></param>
         public void ReleaseSingersNotInUse(UProject project) {
             //Check which singers are in use
             var singersInUse = new HashSet<USinger>();
