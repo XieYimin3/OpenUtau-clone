@@ -128,6 +128,9 @@ namespace OpenUtau.Classic {
                     voicebank.SingerType = USingerType.Classic;
                 }
             }
+            //添加一个注册
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            //调试时发现，在某些特定情况下，不支持shift_jis编码，所以在前面添加一个注册
             Encoding encoding = Encoding.GetEncoding("shift_jis");
             if (!string.IsNullOrEmpty(bankConfig?.TextFileEncoding)) {
                 encoding = Encoding.GetEncoding(bankConfig.TextFileEncoding);
