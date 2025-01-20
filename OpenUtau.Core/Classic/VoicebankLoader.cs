@@ -129,8 +129,11 @@ namespace OpenUtau.Classic {
                 }
             }
             //添加一个注册
-            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            //莫名其妙
+            //System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             //调试时发现，在某些特定情况下，不支持shift_jis编码，所以在前面添加一个注册
+            //但是有时这条注册会导致异常
+            //但目前不清楚为什么把shift_jis编码固定地写在代码里面呢？后面需要看一看安装歌手时如何处理的。
             Encoding encoding = Encoding.GetEncoding("shift_jis");
             if (!string.IsNullOrEmpty(bankConfig?.TextFileEncoding)) {
                 encoding = Encoding.GetEncoding(bankConfig.TextFileEncoding);

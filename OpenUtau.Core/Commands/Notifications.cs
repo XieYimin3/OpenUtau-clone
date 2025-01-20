@@ -114,10 +114,18 @@ namespace OpenUtau.Core {
     }
 
     // Notification for playback manager to change play position
+    /// <summary>
+    /// 通知回放管理器更改播放位置。
+    /// </summary>
     public class SeekPlayPosTickNotification : UNotification {
         public int playPosTick;
         public readonly bool pause;
         public override bool Silent => true;
+        /// <summary>
+        /// 通知回放管理器更改播放位置。
+        /// </summary>
+        /// <param name="tick"></param>
+        /// <param name="pause"></param>
         public SeekPlayPosTickNotification(int tick, bool pause = false) {
             playPosTick = tick;
             this.pause = pause;

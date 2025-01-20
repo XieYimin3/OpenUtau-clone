@@ -13,6 +13,10 @@ using OpenUtau.Core.Util;
 using Serilog;
 
 namespace OpenUtau.Core {
+    /// <summary>
+    /// 用于生成正弦波，用于在点击钢琴键时发出对应频率的声音
+    /// 它属于一种音频样本提供器
+    /// </summary>
     public class SineGen : ISampleProvider {
         public WaveFormat WaveFormat => waveFormat;
         public double Freq { get; set; }
@@ -21,6 +25,7 @@ namespace OpenUtau.Core {
         private double phase;
         private double gain;
         public SineGen() {
+            // 创建一个采样率为44100，单声道的IEEE浮点格式的WaveFormat
             waveFormat = WaveFormat.CreateIeeeFloatWaveFormat(44100, 1);
             Freq = 440;
             gain = 1;

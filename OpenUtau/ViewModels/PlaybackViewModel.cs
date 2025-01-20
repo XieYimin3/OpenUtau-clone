@@ -46,10 +46,11 @@ namespace OpenUtau.App.ViewModels {
         {
             // 调用后端播放管理器的播放或暂停方法
             PlaybackManager.Inst.PlayOrPause(tick: tick, endTick: endTick, trackNo: trackNo);
-            // 如果播放器没有在播放，并且没有开始播放，并且锁定了开始时间
+            //是否设置了“按下暂停时将播放标记移回开始播放处”
             var lockStartTime = Convert.ToBoolean(Preferences.Default.LockStartTime);
+            // 如果播放器没有在播放，并且没有开始播放，并且设置了“按下暂停时将播放标记移回开始播放处”
             if (!PlaybackManager.Inst.Playing && !PlaybackManager.Inst.StartingToPlay && lockStartTime) {
-                // 执行指定位置的播放
+                // 通知后端播放管理器将播放标记移回开始播放处
                 DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(PlaybackManager.Inst.StartTick, true));
             }
         }

@@ -145,6 +145,7 @@ namespace OpenUtau.Audio {
         }
 
         public void SelectDevice(Guid guid, int deviceNumber) {
+            //如果已经选中了这个设备，就不再继续，直接返回
             if (selectedDevice != Guid.Empty && selectedDevice == guid) {
                 return;
             }
