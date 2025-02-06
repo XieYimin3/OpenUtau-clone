@@ -77,6 +77,11 @@ namespace OpenUtau.Core {
             return options;
         }
 
+        /// <summary>
+        /// 必须使用1.15.0版本的Microsoft.ML.OnnxRuntime，否则会引发读写受保护存储区域错误。但是可以不安装Microsoft.ML.OnnxRuntime.DirectML。
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public static InferenceSession getInferenceSession(byte[] model) {
             return new InferenceSession(model,getOnnxSessionOptions());
         }

@@ -24,7 +24,7 @@ using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using ReactiveUI;
 using Serilog;
-using Point = Avalonia.Point;
+using Point = Avalonia.Point; // 表示
 
 /*
 当MainWindow被构造时，会：
@@ -76,7 +76,7 @@ namespace OpenUtau.App.Views {
             viewModel.AddTimeSigChangeCmd = ReactiveCommand.Create<int>(bar => AddTimeSigChange(bar));
             viewModel.DelTimeSigChangeCmd = ReactiveCommand.Create<int>(bar => DelTimeSigChange(bar));
 
-            //初始化定时器
+            //初始化更新播放位置定时器
             timer = new DispatcherTimer(
                 //每15毫秒触发一次
                 TimeSpan.FromMilliseconds(15),

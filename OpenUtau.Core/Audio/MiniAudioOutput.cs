@@ -24,10 +24,18 @@ namespace OpenUtau.Audio {
         private IntPtr nativeContext = IntPtr.Zero;
         private Guid selectedDevice = Guid.Empty;
 
+        /// <summary>
+        /// 初始化mini audio输出
+        /// </summary>
+        /// <exception cref="Exception"></exception>
         public MiniAudioOutput() {
+            //先更新设备列表
             UpdateDeviceList();
+            //
             unsafe {
+                //将DataCallback转换为ou_audio_data_callback_t类型的委托
                 var f = (ou_audio_data_callback_t)DataCallback;
+                //固定委托的内存地址，目的不清楚
                 GCHandle.Alloc(f);
                 callbackPtr = Marshal.GetFunctionPointerForDelegate(f);
             }
@@ -118,6 +126,12 @@ namespace OpenUtau.Audio {
         }
 
         float[] temp = new float[0];
+        /// <summary>
+        /// 使用unsafe的目的是为了直接操作指针，提高性能
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="channels"></param>
+        /// <param name="frame_count"></param>
         private unsafe void DataCallback(float* buffer, uint channels, uint frame_count) {
             int samples = (int)(channels * frame_count);
             if (temp.Length < samples) {
@@ -201,6 +215,12 @@ namespace OpenUtau.Audio {
             public uint api_id;
         }
 
+        /// <summary>
+        /// 委托类型，定义了音频数据回调函数的签名
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="channels"></param>
+        /// <param name="frame_count"></param>
         [UnmanagedFunctionPointer(callingConvention: CallingConvention.Cdecl)]
         private unsafe delegate void ou_audio_data_callback_t(float* buffer, uint channels, uint frame_count);
 

@@ -9,23 +9,36 @@ using Serilog;
 
 namespace OpenUtau.Core.Util {
 
+    /// <summary>
+    /// 静态类Preferences用于保存用户的偏好设置
+    /// 使用静态类，不用实例化，直接调用
+    /// </summary>
     public static class Preferences {
+        /// <summary>
+        /// 静态变量Default用于存放程序运行中的偏好设置
+        /// </summary>
         public static SerializablePreferences Default;
 
         static Preferences() {
             Load();
         }
 
+        /// <summary>
+        /// 保存偏好设置到配置文件
+        /// </summary>
         public static void Save() {
             try {
-                File.WriteAllText(PathManager.Inst.PrefsFilePath,
-                    JsonConvert.SerializeObject(Default, Formatting.Indented),
-                    Encoding.UTF8);
+                File.WriteAllText(PathManager.Inst.PrefsFilePath, // 配置文件路径
+                    JsonConvert.SerializeObject(Default, Formatting.Indented), // 序列化为json格式
+                    Encoding.UTF8); // 使用UTF-8编码
             } catch (Exception e) {
                 Log.Error(e, "Failed to save prefs.");
             }
         }
 
+        /// <summary>
+        /// 重置偏好设置为默认值
+        /// </summary>
         public static void Reset() {
             Default = new SerializablePreferences();
             Save();
@@ -84,6 +97,9 @@ namespace OpenUtau.Core.Util {
             Save();
         }
 
+        /// <summary>
+        /// 从配置文件中读取用户的偏好设置，用于初始化
+        /// </summary>
         private static void Load() {
             try {
                 if (File.Exists(PathManager.Inst.PrefsFilePath)) {
@@ -94,10 +110,11 @@ namespace OpenUtau.Core.Util {
                         return;
                     }
 
-                    if (!ValidString(new Action(() => CultureInfo.GetCultureInfo(Default.Language)))) Default.Language = string.Empty;
-                    if (!ValidString(new Action(() => CultureInfo.GetCultureInfo(Default.SortingOrder)))) Default.SortingOrder = string.Empty;
-                    if (!Renderers.getRendererOptions().Contains(Default.DefaultRenderer)) Default.DefaultRenderer = string.Empty;
-                    if (!Onnx.getRunnerOptions().Contains(Default.OnnxRunner)) Default.OnnxRunner = string.Empty;
+                    // 以下代码用于检查偏好设置是否合法
+                    if (!ValidString(new Action(() => CultureInfo.GetCultureInfo(Default.Language)))) Default.Language = string.Empty; // 语言设置
+                    if (!ValidString(new Action(() => CultureInfo.GetCultureInfo(Default.SortingOrder)))) Default.SortingOrder = string.Empty; // 也是和language一样的语言设置，但我不知道为什么叫SortingOrder？
+                    if (!Renderers.getRendererOptions().Contains(Default.DefaultRenderer)) Default.DefaultRenderer = string.Empty; // 传统渲染器设置
+                    if (!Onnx.getRunnerOptions().Contains(Default.OnnxRunner)) Default.OnnxRunner = string.Empty; // 机器学习渲染器设置
                 } else {
                     Reset();
                 }
@@ -107,6 +124,11 @@ namespace OpenUtau.Core.Util {
             }
         }
 
+        /// <summary>
+        /// 尝试进行一些操作，以验证配置文件部分内容是否合法
+        /// </summary>
+        /// <param name="action"></param>
+        /// <returns></returns>
         private static bool ValidString(Action action) {
             try {
                 action();
@@ -116,6 +138,9 @@ namespace OpenUtau.Core.Util {
             }
         }
 
+        /// <summary>
+        /// 默认初始的偏好设置
+        /// </summary>
         [Serializable]
         public class SerializablePreferences {
             public const int MidiWidth = 1024;

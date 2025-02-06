@@ -55,6 +55,13 @@ namespace OpenUtau.Core.Render {
         }
 
         // for playback or export
+        /// <summary>
+        /// 分轨渲染并混合
+        /// </summary>
+        /// <param name="uiScheduler"></param>
+        /// <param name="cancellation"></param>
+        /// <param name="wait"></param>
+        /// <returns></returns>
         public Tuple<WaveMix, List<Fader>> RenderMixdown(TaskScheduler uiScheduler, ref CancellationTokenSource cancellation, bool wait = false) {
             var newCancellation = new CancellationTokenSource();
             var oldCancellation = Interlocked.Exchange(ref cancellation, newCancellation);
@@ -123,6 +130,12 @@ namespace OpenUtau.Core.Render {
         }
 
         // for playback
+        /// <summary>
+        /// 供实时播放使用
+        /// </summary>
+        /// <param name="uiScheduler"></param>
+        /// <param name="cancellation"></param>
+        /// <returns></returns>
         public Tuple<MasterAdapter, List<Fader>> RenderProject(TaskScheduler uiScheduler, ref CancellationTokenSource cancellation) {
             double startMs = project.timeAxis.TickPosToMsPos(startTick);
             var renderMixdownResult = RenderMixdown(uiScheduler, ref cancellation, wait: false);
@@ -132,6 +145,12 @@ namespace OpenUtau.Core.Render {
         }
 
         // for export
+        /// <summary>
+        /// 供导出使用
+        /// </summary>
+        /// <param name="uiScheduler"></param>
+        /// <param name="cancellation"></param>
+        /// <returns></returns>
         public List<WaveMix> RenderTracks(TaskScheduler uiScheduler, ref CancellationTokenSource cancellation) {
             var newCancellation = new CancellationTokenSource();
             var oldCancellation = Interlocked.Exchange(ref cancellation, newCancellation);

@@ -9,7 +9,7 @@ using Serilog;
 
 
 /*
-SplashWindow类是开屏窗口
+SplashWindow类是开屏窗口，在这里执行了主要的初始化工作
     1.构造函数中初始化窗口；
     2.在窗口打开时触发事件SplashWindow_Opened；
     3.在事件SplashWindow_Opened中调用Start方法；
@@ -66,7 +66,7 @@ namespace OpenUtau.App.Views {
         }
 
         /// <summary>
-        /// 初始化OpenUtau，主要是后端的初始化
+        /// 初始化OpenUtau，主要是后端的初始化，重要
         /// </summary>
         private void Start() {
             //获取当前线程

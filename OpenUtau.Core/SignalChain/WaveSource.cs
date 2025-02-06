@@ -35,6 +35,14 @@ namespace OpenUtau.Core.SignalChain {
                 || data != null;
         }
 
+        /// <summary>
+        /// 叠加float音频样本到现有缓冲区值，实现声音混合
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="buffer"></param>
+        /// <param name="index"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
         public int Mix(int position, float[] buffer, int index, int count) {
             int copies = 2 / channels;
             if (data == null) {

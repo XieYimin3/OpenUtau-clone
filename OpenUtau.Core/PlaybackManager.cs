@@ -16,6 +16,7 @@ namespace OpenUtau.Core {
     /// <summary>
     /// 用于生成正弦波，用于在点击钢琴键时发出对应频率的声音
     /// 它属于一种音频样本提供器
+    /// 44100，单声道，IEEE浮点格式
     /// </summary>
     public class SineGen : ISampleProvider {
         public WaveFormat WaveFormat => waveFormat;
@@ -58,7 +59,7 @@ namespace OpenUtau.Core {
             }
         }
 
-        List<Fader> faders;
+        List<Fader> faders; // 每个音轨的音量控制器（推子）
         MasterAdapter masterMix;
         double startMs;
         public int StartTick => DocManager.Inst.Project.timeAxis.MsPosToTickPos(startMs);
@@ -99,6 +100,7 @@ namespace OpenUtau.Core {
         /// 音轨编号，-1表示所有音轨
         /// </param>
         public void PlayOrPause(int tick = -1, int endTick = -1, int trackNo = -1) {
+            // 如果当前正在播放，则暂停播放
             if (Playing) {
                 PausePlayback();
             } else {
@@ -151,22 +153,34 @@ namespace OpenUtau.Core {
             AudioOutput.Pause();
         }
 
+        /// <summary>
+        /// 开始播放
+        /// </summary>
+        /// <param name="startMs"></param>
+        /// <param name="masterAdapter"></param>
         private void StartPlayback(double startMs, MasterAdapter masterAdapter) {
             this.startMs = startMs;
             var start = TimeSpan.FromMilliseconds(startMs);
             Log.Information($"StartPlayback at {start}");
             masterMix = masterAdapter;
             AudioOutput.Stop();
-            AudioOutput.Init(masterMix);
+            AudioOutput.Init(masterMix); // 初始化音频输出，将渲染结果的总线适配器传入
             AudioOutput.Play();
         }
 
+        /// <summary>
+        /// 渲染
+        /// </summary>
+        /// <param name="project"></param>
+        /// <param name="tick"></param>
+        /// <param name="endTick"></param>
+        /// <param name="trackNo"></param>
         private void Render(UProject project, int tick, int endTick, int trackNo) {
             Task.Run(() => {
                 try {
                     RenderEngine engine = new RenderEngine(project, startTick: tick, endTick: endTick, trackNo: trackNo);
-                    var result = engine.RenderProject(DocManager.Inst.MainScheduler, ref renderCancellation);
-                    faders = result.Item2;
+                    var result = engine.RenderProject(DocManager.Inst.MainScheduler, ref renderCancellation); // result渲染结果包含了一个总线适配器和各个音轨的音量控制器
+                    faders = result.Item2; // 取出音量控制器
                     StartingToPlay = false;
                     StartPlayback(project.timeAxis.TickPosToMsPos(tick), result.Item1);
                 } catch (Exception e) {
