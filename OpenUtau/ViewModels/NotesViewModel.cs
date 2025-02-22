@@ -409,6 +409,12 @@ namespace OpenUtau.App.ViewModels {
             return new Size(ticks * TickWidth, tone * TrackHeight);
         }
 
+        /// <summary>
+        /// 尝试添加音符
+        /// </summary>
+        /// <param name="point"></param>
+        /// <param name="useLastLength"></param>
+        /// <returns></returns>
         public UNote? MaybeAddNote(Point point, bool useLastLength) {
             if (Part == null) {
                 return null;
@@ -421,9 +427,9 @@ namespace OpenUtau.App.ViewModels {
             int snapUnit = project.resolution * 4 / SnapDiv;
             int tick = PointToTick(point);
             int snappedTick = (int)Math.Floor((double)tick / snapUnit) * snapUnit;
-            UNote note = project.CreateNote(tone, snappedTick,
+            UNote note = project.CreateNote(tone, snappedTick, // 获取音符对象
                 useLastLength ? _lastNoteLength : IsSnapOn ? snappedTick : 15);
-            DocManager.Inst.ExecuteCmd(new AddNoteCommand(Part, note));
+            DocManager.Inst.ExecuteCmd(new AddNoteCommand(Part, note)); // 把音符对象添加到分片里
             return note;
         }
 

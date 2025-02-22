@@ -206,6 +206,9 @@ namespace OpenUtau.App.Views {
         }
     }
 
+    /// <summary>
+    /// 音符绘制编辑状态
+    /// </summary>
     class NoteDrawEditState : NoteEditState {
         private UNote? note;
         private SineGen? sineGen;
@@ -219,7 +222,7 @@ namespace OpenUtau.App.Views {
         }
         public override void Begin(IPointer pointer, Point point) {
             base.Begin(pointer, point);
-            note = vm.NotesViewModel.MaybeAddNote(point, false);
+            note = vm.NotesViewModel.MaybeAddNote(point, false); // 在vm中尝试添加音符
             if (note != null && playTone) {
                 sineGen = PlaybackManager.Inst.PlayTone(MusicMath.ToneToFreq(note.tone));
             }

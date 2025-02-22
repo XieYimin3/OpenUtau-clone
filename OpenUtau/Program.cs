@@ -124,12 +124,12 @@ namespace OpenUtau.App {
 
         public static void InitLogging() {
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Verbose()
-                .WriteTo.Debug()
-                .WriteTo.Logger(lc => lc
+                .MinimumLevel.Verbose() // 最低日志等级为 Verbose
+                .WriteTo.Debug() // 输出到调试窗口
+                .WriteTo.Logger(lc => lc // 输出到文件
                     .MinimumLevel.Information()
                     .WriteTo.File(PathManager.Inst.LogFilePath, rollingInterval: RollingInterval.Day, encoding: Encoding.UTF8))
-                .WriteTo.Logger(lc => lc
+                .WriteTo.Logger(lc => lc // 输出到 Debug 窗口
                     .MinimumLevel.ControlledBy(DebugViewModel.Sink.Inst.LevelSwitch)
                     .WriteTo.Sink(DebugViewModel.Sink.Inst))
                 .CreateLogger();

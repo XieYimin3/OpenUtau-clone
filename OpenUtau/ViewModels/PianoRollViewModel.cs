@@ -66,7 +66,7 @@ namespace OpenUtau.App.ViewModels {
 
         public ObservableCollectionExtended<MenuItemViewModel> LegacyPlugins { get; private set; }
             = new ObservableCollectionExtended<MenuItemViewModel>();
-        public ObservableCollectionExtended<MenuItemViewModel> NoteBatchEdits { get; private set; }
+        public ObservableCollectionExtended<MenuItemViewModel> NoteBatchEdits { get; private set; } // 可用的批量编辑命令
             = new ObservableCollectionExtended<MenuItemViewModel>();
         public ObservableCollectionExtended<MenuItemViewModel> LyricBatchEdits { get; private set; }
             = new ObservableCollectionExtended<MenuItemViewModel>();

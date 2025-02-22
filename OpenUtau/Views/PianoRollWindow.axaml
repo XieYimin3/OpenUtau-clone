@@ -15,7 +15,10 @@
   <Window.Styles>
     <StyleInclude Source="/Styles/PianoRollStyles.axaml"/>
   </Window.Styles>
+
+    <!-- 根控件 -->
   <Border Grid.Row="1">
+      <!-- 根控件 -->
     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="{Binding $parent[1].WindowDecorationMargin}">
       <Grid.RowDefinitions>
         <RowDefinition Height="24"/>
@@ -39,6 +42,8 @@
                  Width="50" Height="50" Stretch="UniformToFill" Source="{Binding NotesViewModel.Avatar}"/>
         </Border>
       </Grid>
+        
+        <!-- 横向滑动条 -->
       <ScrollBar Name="HScrollBar" Classes="music" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                  Margin="0,4,0,4" Orientation="Horizontal" AllowAutoHide="False"
                  DataContext="{Binding NotesViewModel}"
@@ -47,6 +52,7 @@
                  ViewportSize="{Binding ViewportTicks}"
                  LargeChange="{Binding ViewportTicks}"
                  SmallChange="{Binding SmallChangeX}" PointerWheelChanged="HScrollPointerWheelChanged"/>
+        <!-- 纵向滑动条 -->
       <ScrollBar Name="VScrollBar" Classes="music" Grid.Row="3" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                  Margin="4,0,4,0" Orientation="Vertical" AllowAutoHide="False"
                  DataContext="{Binding NotesViewModel}"
@@ -63,6 +69,7 @@
                          PointerPressed="KeyboardPointerPressed"
                          PointerMoved="KeyboardPointerMoved"
                          PointerReleased="KeyboardPointerReleased"/>
+        <!-- 表情选择器 -->
       <Grid Grid.Column="0" Grid.Row="5">
         <c:ExpSelector Name="expSelector1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
                        Index="0" Margin="0,0,0,0" ToolTip.Tip="Alt + 1"/>
@@ -87,6 +94,7 @@
           </Path>
         </Button>
       </Grid>
+        <!-- 时间轴小三角轨道 -->
       <Canvas Name="TimelineCanvas" Grid.Row="2" Grid.Column="1"
               Background="Transparent" ClipToBounds="True"
               PointerWheelChanged="TimelinePointerWheelChanged"
@@ -99,6 +107,7 @@
               Fill="{DynamicResource NeutralAccentBrushSemi}"
               Data="M -6.5 0 L 6.5 0 L 6.5 3 L 0 9 L -6.5 3 Z"/>
       </Canvas>
+        
       <c:TrackBackground Grid.Row="3" Grid.Column="1" IsHitTestVisible="False"
                          Foreground="{DynamicResource TrackBackgroundAltBrush}"
                          DataContext="{Binding NotesViewModel}"
@@ -115,8 +124,10 @@
                         SnapDiv="{Binding NotesViewModel.SnapDiv, Mode=OneWay}"
                         SnapTicks="{Binding NotesViewModel.SnapTicks}"
                         ShowBarNumber="True"/>
+        <!-- 立绘 -->
       <Image Grid.Row="3" Grid.RowSpan="3" Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,100,0"
              Source="{Binding NotesViewModel.Portrait}" OpacityMask="{Binding NotesViewModel.PortraitMask}" Stretch="None"/>
+        <!-- 波形图 -->
       <Border Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
               Margin="0,0,0,60" Height="60" IsHitTestVisible="False">
         <c:WaveformImage DataContext="{Binding NotesViewModel, Mode=OneWay}"
@@ -124,6 +135,7 @@
                          TickOffset="{Binding TickOffset, Mode=OneWay}"
                          ShowWaveform="{Binding ShowWaveform, Mode=OneWay}"/>
       </Border>
+        <!-- 音符画布 -->
       <c:NotesCanvas Grid.Row="3" Grid.Column="1"
                      TickWidth="{Binding NotesViewModel.TickWidth}"
                      TrackHeight="{Binding NotesViewModel.TrackHeight}"

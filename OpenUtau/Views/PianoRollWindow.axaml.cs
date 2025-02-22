@@ -46,7 +46,7 @@ namespace OpenUtau.App.Views {
             DataContext = ViewModel = new PianoRollViewModel();
             ValueTip.IsVisible = false;
 
-            noteBatchEditCommand = ReactiveCommand.Create<BatchEdit>(async edit => {
+            noteBatchEditCommand = ReactiveCommand.Create<BatchEdit>(async edit => { // 注册音符批量编辑命令
                 var NotesVm = ViewModel?.NotesViewModel;
                 if (NotesVm == null || NotesVm.Part == null) {
                     return;
@@ -57,10 +57,10 @@ namespace OpenUtau.App.Views {
                             (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)
                             ?.MainWindow! as MainWindow;
                         var name = ThemeManager.GetString(edit.Name);
-                        await MessageBox.ShowProcessing(this, $"{name} - ? / ?",
+                        await MessageBox.ShowProcessing(this, $"{name} - ? / ?", // 弹出处理中对话框
                             ThemeManager.GetString("pianoroll.menu.batch.running"),
                             (messageBox, cancellationToken) => {
-                                edit.RunAsync(NotesVm.Project, NotesVm.Part,
+                                edit.RunAsync(NotesVm.Project, NotesVm.Part, // 开始运行批量编辑
                                     NotesVm.Selection.ToList(), DocManager.Inst,
                                     (current, total) => {
                                         messageBox.SetText($"{name}: {current} / {total}");
@@ -88,8 +88,8 @@ namespace OpenUtau.App.Views {
                 }
 
             });
-            ViewModel.NoteBatchEdits.AddRange(new List<BatchEdit>() {
-                new LoadRenderedPitch(),
+            ViewModel.NoteBatchEdits.AddRange(new List<BatchEdit>() { // 向列表添加批量编辑-音符
+                new LoadRenderedPitch(), // 加载渲染音高结果
                 new AddTailNote("-", "pianoroll.menu.notes.addtaildash"),
                 new AddTailNote("R", "pianoroll.menu.notes.addtailrest"),
                 new RemoveTailNote("-", "pianoroll.menu.notes.removetaildash"),
@@ -106,7 +106,7 @@ namespace OpenUtau.App.Views {
                 Command = noteBatchEditCommand,
                 CommandParameter = edit,
             }));
-            ViewModel.LyricBatchEdits.AddRange(new List<BatchEdit>() {
+            ViewModel.LyricBatchEdits.AddRange(new List<BatchEdit>() { // 向列表添加批量编辑-歌词
                 new RomajiToHiragana(),
                 new HiraganaToRomaji(),
                 new JapaneseVCVtoCV(),
@@ -122,7 +122,7 @@ namespace OpenUtau.App.Views {
                 Command = noteBatchEditCommand,
                 CommandParameter = edit,
             }));
-            ViewModel.ResetBatchEdits.AddRange(new List<BatchEdit>() {
+            ViewModel.ResetBatchEdits.AddRange(new List<BatchEdit>() { // 向列表添加批量编辑-重置
                 new ResetAll(),
                 new ResetPitchBends(),
                 new ResetAllExpressions(),
@@ -419,18 +419,33 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        /// <summary>
+        /// 水平滚动条滚轮事件-水平滚动
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         public void HScrollPointerWheelChanged(object sender, PointerWheelEventArgs args) {
             var scrollbar = (ScrollBar)sender;
             scrollbar.Value = Math.Max(scrollbar.Minimum, Math.Min(scrollbar.Maximum, scrollbar.Value - scrollbar.SmallChange * args.Delta.Y));
             LyricBox?.EndEdit();
         }
 
+        /// <summary>
+        /// 垂直滚动条滚轮事件-垂直滚动
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         public void VScrollPointerWheelChanged(object sender, PointerWheelEventArgs args) {
             var scrollbar = (ScrollBar)sender;
             scrollbar.Value = Math.Max(scrollbar.Minimum, Math.Min(scrollbar.Maximum, scrollbar.Value - scrollbar.SmallChange * args.Delta.Y));
             LyricBox?.EndEdit();
         }
 
+        /// <summary>
+        /// 时间轴滚轮-水平缩放
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         public void TimelinePointerWheelChanged(object sender, PointerWheelEventArgs args) {
             var control = (Control)sender;
             var position = args.GetCurrentPoint((Visual)sender).Position;
@@ -440,16 +455,26 @@ namespace OpenUtau.App.Views {
             LyricBox?.EndEdit();
         }
 
+        /// <summary>
+        /// 垂直缩放滚轮-垂直缩放
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         public void ViewScalerPointerWheelChanged(object sender, PointerWheelEventArgs args) {
             ViewModel.NotesViewModel.OnYZoomed(new Point(0, 0.5), 0.1 * args.Delta.Y);
             LyricBox?.EndEdit();
         }
 
+        /// <summary>
+        /// 时间轴点击-定位播放位置
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         public void TimelinePointerPressed(object sender, PointerPressedEventArgs args) {
             var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
             if (point.Properties.IsLeftButtonPressed) {
-                args.Pointer.Capture(control);
+                args.Pointer.Capture(control); // 捕获鼠标
                 ViewModel.NotesViewModel.PointToLineTick(point.Position, out int left, out int right);
                 int tick = left + ViewModel.NotesViewModel.Part?.position ?? 0;
                 ViewModel.PlaybackViewModel?.MovePlayPos(tick);
@@ -457,6 +482,11 @@ namespace OpenUtau.App.Views {
             LyricBox?.EndEdit();
         }
 
+        /// <summary>
+        /// 时间轴移动-定位播放位置
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         public void TimelinePointerMoved(object sender, PointerEventArgs args) {
             var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
@@ -467,10 +497,20 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        /// <summary>
+        /// 时间轴释放-释放鼠标捕获
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         public void TimelinePointerReleased(object sender, PointerReleasedEventArgs args) {
             args.Pointer.Capture(null);
         }
 
+        /// <summary>
+        /// 音符画布点击
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         public void NotesCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
             LyricBox?.EndEdit();
             if (ViewModel.NotesViewModel.Part == null) {
@@ -481,11 +521,11 @@ namespace OpenUtau.App.Views {
             if (editState != null) {
                 return;
             }
-            if (point.Properties.IsLeftButtonPressed) {
+            if (point.Properties.IsLeftButtonPressed) { // 左键点击
                 NotesCanvasLeftPointerPressed(control, point, args);
-            } else if (point.Properties.IsRightButtonPressed) {
+            } else if (point.Properties.IsRightButtonPressed) { // 右键点击
                 NotesCanvasRightPointerPressed(control, point, args);
-            } else if (point.Properties.IsMiddleButtonPressed) {
+            } else if (point.Properties.IsMiddleButtonPressed) { // 中键点击
                 editState = new NotePanningState(control, ViewModel, this);
                 Cursor = ViewConstants.cursorHand;
             }
@@ -495,6 +535,12 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        /// <summary>
+        /// 音符画布点击-左键点击
+        /// </summary>
+        /// <param name="control"></param>
+        /// <param name="point"></param>
+        /// <param name="args"></param>
         private void NotesCanvasLeftPointerPressed(Control control, PointerPoint point, PointerPressedEventArgs args) {
             if (ViewModel.NotesViewModel.DrawPitchTool || ViewModel.NotesViewModel.DrawLinePitchTool || ViewModel.NotesViewModel.OverwritePitchTool) {
                 ViewModel.NotesViewModel.DeselectNotes();
@@ -601,13 +647,19 @@ namespace OpenUtau.App.Views {
                     return;
                 }
                 ViewModel.NotesViewModel.DeselectNotes();
-            } else if (ViewModel.NotesViewModel.PenTool ||
+            } else if (ViewModel.NotesViewModel.PenTool || // 如果是笔或者笔增强工具
                 ViewModel.NotesViewModel.PenPlusTool) {
-                ViewModel.NotesViewModel.DeselectNotes();
-                editState = new NoteDrawEditState(control, ViewModel, this, ViewModel.NotesViewModel.PlayTone);
+                ViewModel.NotesViewModel.DeselectNotes(); // 取消已选中的音符
+                editState = new NoteDrawEditState(control, ViewModel, this, ViewModel.NotesViewModel.PlayTone); // 创建音符绘制
             }
         }
 
+        /// <summary>
+        /// 音符画布点击-右键点击
+        /// </summary>
+        /// <param name="control"></param>
+        /// <param name="point"></param>
+        /// <param name="args"></param>
         private void NotesCanvasRightPointerPressed(Control control, PointerPoint point, PointerPressedEventArgs args) {
             var selectedNotes = ViewModel.NotesViewModel.Selection.ToList();
             if (ViewModel.NotesViewModel.DrawPitchTool || ViewModel.NotesViewModel.DrawLinePitchTool || ViewModel.NotesViewModel.OverwritePitchTool) {
@@ -718,9 +770,14 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        /// <summary>
+        /// 音符画布移动
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         public void NotesCanvasPointerMoved(object sender, PointerEventArgs args) {
             var control = (Control)sender;
-            var point = args.GetCurrentPoint(control);
+            var point = args.GetCurrentPoint(control); // 获取当前指针
             if (ValueTipCanvas != null) {
                 valueTipPointerPosition = args.GetCurrentPoint(ValueTipCanvas!).Position;
             }
@@ -759,6 +816,11 @@ namespace OpenUtau.App.Views {
             Cursor = null;
         }
 
+        /// <summary>
+        /// 音符画布释放-结束编辑状态
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         public void NotesCanvasPointerReleased(object sender, PointerReleasedEventArgs args) {
             if (editState == null) {
                 return;
@@ -774,6 +836,11 @@ namespace OpenUtau.App.Views {
             Cursor = null;
         }
 
+        /// <summary>
+        /// 音符画布双击-显示歌词编辑框
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         public void NotesCanvasDoubleTapped(object sender, TappedEventArgs args) {
             if (!(sender is Control control)) {
                 return;
@@ -791,6 +858,11 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         public void NotesCanvasPointerWheelChanged(object sender, PointerWheelEventArgs args) {
             LyricBox?.EndEdit();
             var control = (Control)sender;
@@ -821,6 +893,11 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        /// <summary>
+        /// 音符画布右键菜单打开
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         public void NotesContextMenuOpening(object sender, CancelEventArgs args) {
             if (shouldOpenNotesContextMenu) {
                 shouldOpenNotesContextMenu = false;
@@ -829,10 +906,20 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        /// <summary>
+        /// 音符画布右键菜单关闭
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         public void NotesContextMenuClosing(object sender, CancelEventArgs args) {
             ViewModel.NotesContextMenuItems?.Clear();
         }
 
+        /// <summary>
+        /// 表情画布按下-编辑表情值
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         public void ExpCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
             LyricBox?.EndEdit();
             if (ViewModel.NotesViewModel.Part == null) {
@@ -843,9 +930,9 @@ namespace OpenUtau.App.Views {
             if (editState != null) {
                 return;
             }
-            if (point.Properties.IsLeftButtonPressed) {
+            if (point.Properties.IsLeftButtonPressed) { // 左键点击-设置表情
                 editState = new ExpSetValueState(control, ViewModel, this);
-            } else if (point.Properties.IsRightButtonPressed) {
+            } else if (point.Properties.IsRightButtonPressed) { // 右键点击-重置表情
                 editState = new ExpResetValueState(control, ViewModel, this);
                 Cursor = ViewConstants.cursorNo;
             }
@@ -855,6 +942,11 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        /// <summary>
+        /// 表情画布移动-更新表情值
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         public void ExpCanvasPointerMoved(object sender, PointerEventArgs args) {
             var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
@@ -868,6 +960,11 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        /// <summary>
+        /// 表情画布释放-结束编辑状态
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         public void ExpCanvasPointerReleased(object sender, PointerReleasedEventArgs args) {
             if (editState == null) {
                 return;
@@ -1004,6 +1101,11 @@ namespace OpenUtau.App.Views {
             return locked && ViewModel.NotesViewModel.Selection.Count > 0 && !ViewModel.NotesViewModel.Selection.Contains(note);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         public void OnSnapDivMenuButton(object sender, RoutedEventArgs args) {
             SnapDivMenu.PlacementTarget = sender as Button;
             SnapDivMenu.Open();
