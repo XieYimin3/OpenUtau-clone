@@ -8,26 +8,30 @@ using OpenUtau.Core.Util;
 using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
+    /// <summary>
+    /// 音符，可比较，比较的依据是音符的起始位置position和HashCode。
+    /// </summary>
     public class UNote : IComparable {
         static readonly Regex phoneticHintPattern = new Regex(@"\[(.*)\]");
 
         /// <summary>
         /// Position of the note in ticks, relative to the beginning of the part.
         /// </summary>
-        public int position;
-        public int duration;
-        public int tone;
-        public string lyric = NotePresets.Default.DefaultLyric;
-        public UPitch pitch;
-        public UVibrato vibrato;
+        public int position; // 音符在part中的相对起始位置
+        public int duration; // 音符持续时间
+        public int tone; // 音符音高
+        public string lyric = NotePresets.Default.DefaultLyric; // 音符歌词
+        public UPitch pitch; // 音符音高曲线
+        public UVibrato vibrato; // 音符颤音
 
         public List<UExpression> phonemeExpressions = new List<UExpression>();
         public List<UPhonemeOverride> phonemeOverrides = new List<UPhonemeOverride>();
 
-        [YamlIgnore] public int End => position + duration;
+        [YamlIgnore] public int End => position + duration; // 音符在part中的相对结束位置
 
         /// <summary>
         /// Position of the note in milliseconds, relative to the beginning of the project.
+        /// 表示音符在工程中的绝对位置
         /// </summary>
         [YamlIgnore] public double PositionMs { get; set; }
         [YamlIgnore] public double DurationMs => EndMs - PositionMs;
@@ -45,6 +49,10 @@ namespace OpenUtau.Core.Ustx {
         [YamlIgnore] public List<UExpression> phonemizerExpressions = new List<UExpression>();
         [YamlIgnore] public int[] phonemeIndexes { get; set; } = new int[0];
 
+        /// <summary>
+        /// 静态方法，返回一个音符
+        /// </summary>
+        /// <returns></returns>
         public static UNote Create() {
             var note = new UNote();
             note.pitch = new UPitch();
@@ -263,20 +271,30 @@ namespace OpenUtau.Core.Ustx {
         }
     }
 
+    /// <summary>
+    /// 音符颤音
+    /// </summary>
     public class UVibrato {
         // Vibrato percentage of note length.
+        // 颤音时长，百分比
         float _length;
         // Period in milliseconds.
+        // 颤音周期，毫秒
         float _period = NotePresets.Default.DefaultVibrato.VibratoPeriod;
         // Depth in cents (1 semitone = 100 cents).
+        // 颤音深度
         float _depth = NotePresets.Default.DefaultVibrato.VibratoDepth;
         // Fade-in percentage of vibrato length.
+        // 颤音淡入
         float _in = NotePresets.Default.DefaultVibrato.VibratoIn;
         // Fade-out percentage of vibrato length.
+        // 颤音淡出
         float _out = NotePresets.Default.DefaultVibrato.VibratoOut;
         // Shift percentage of period length.
+        // 颤音偏移（相位）
         float _shift = NotePresets.Default.DefaultVibrato.VibratoShift;
         // Shift the whole vibrato up and down.
+        // 颤音整体上下偏移
         float _drift = NotePresets.Default.DefaultVibrato.VibratoDrift;
         // Percentage of volume reduction in linkage with vibrato. When this is 100%, volume will be 1.2 times to 0.2 times regardless of depth.
         float _volLink = NotePresets.Default.DefaultVibrato.VibratoVolLink;

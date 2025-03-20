@@ -14,13 +14,18 @@ namespace OpenUtau.App.Views {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// 点击安装按钮
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="arg"></param>
         void InstallClicked(object sender, RoutedEventArgs arg) {
             var viewModel = DataContext as SingerSetupViewModel;
             if (viewModel == null) {
                 return;
             }
             var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
-            var task = viewModel.Install();
+            var task = viewModel.Install(); // 调用vm安装方法
             task.ContinueWith((task) => {
                 if (task.IsFaulted) {
                     Log.Error(task.Exception, "Failed to install singer");

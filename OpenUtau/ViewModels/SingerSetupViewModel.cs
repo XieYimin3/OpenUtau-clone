@@ -200,14 +200,17 @@ namespace OpenUtau.App.ViewModels {
                     //字符串
                     //获取声库安装路径
                     var basePath = PathManager.Inst.SingersInstallPath;
-                    //开始安装(bushi
+                    //开始安装
+
                     //关键：初始化安装器
                     var installer = new VoicebankInstaller(basePath, (progress, info) => {
                         //产生进度条通知，将一个可以发送进度通知的命令执行器传递给安装器，以便安装器更新进度条
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(progress, info));
                     }, archiveEncoding, textEncoding);
+
                     //关键：开始安装
                     installer.Install(archiveFilePath, SingerType);
+
                 } finally {
                     //安装完成后
                     new Task(() => {

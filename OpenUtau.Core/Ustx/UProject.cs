@@ -53,15 +53,17 @@ namespace OpenUtau.Core.Ustx {
         public List<UTimeSignature> timeSignatures;
         public List<UTempo> tempos;
         public List<UTrack> tracks;
-        [YamlIgnore] public List<UPart> parts;
+        [YamlIgnore] public List<UPart> parts; // All parts, including voice and wave parts
         [YamlIgnore] public bool SoloTrackExist { get => tracks.Any(t => t.Solo); }
 
         /// <summary>
         /// Transient field used for serialization.
+        /// 临时字段，用于序列化
         /// </summary>
         public List<UVoicePart> voiceParts;
         /// <summary>
         /// Transient field used for serialization.
+        /// 临时字段，用于序列化
         /// </summary>
         public List<UWavePart> waveParts;
 

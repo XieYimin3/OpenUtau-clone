@@ -66,7 +66,7 @@ namespace OpenUtau.Core.Ustx {
         /// 先加载音符，再加载表情曲线。
         /// </summary>
         [YamlMember(Order = 100)]
-        public SortedSet<UNote> notes = new SortedSet<UNote>();
+        public SortedSet<UNote> notes = new SortedSet<UNote>(); // 音符组
         [YamlMember(Order = 101)]
         public List<UCurve> curves = new List<UCurve>();
 
