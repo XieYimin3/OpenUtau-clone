@@ -419,9 +419,9 @@ namespace OpenUtau.App.ViewModels {
             if (Part == null) {
                 return null;
             }
-            var project = DocManager.Inst.Project;
+            var project = DocManager.Inst.Project; // 获取项目对象
             int tone = PointToTone(point);
-            if (tone >= ViewConstants.MaxTone || tone < 0) {
+            if (tone >= ViewConstants.MaxTone || tone < 0) { // 如果音符超出范围
                 return null;
             }
             int snapUnit = project.resolution * 4 / SnapDiv;
@@ -429,7 +429,7 @@ namespace OpenUtau.App.ViewModels {
             int snappedTick = (int)Math.Floor((double)tick / snapUnit) * snapUnit;
             UNote note = project.CreateNote(tone, snappedTick, // 获取音符对象
                 useLastLength ? _lastNoteLength : IsSnapOn ? snappedTick : 15);
-            DocManager.Inst.ExecuteCmd(new AddNoteCommand(Part, note)); // 把音符对象添加到分片里
+            DocManager.Inst.ExecuteCmd(new AddNoteCommand(Part, note)); // 把音符对象添加到分片里。添加音符的核心操作
             return note;
         }
 
@@ -997,6 +997,11 @@ namespace OpenUtau.App.ViewModels {
             return true;
         }
 
+        /// <summary>
+        /// 订阅者接收通知，更新音符
+        /// </summary>
+        /// <param name="cmd"></param>
+        /// <param name="isUndo"></param>
         public void OnNext(UCommand cmd, bool isUndo) {
             if (cmd is UNotification notif) {
                 if (cmd is LoadPartNotification loadPart) {
@@ -1028,9 +1033,9 @@ namespace OpenUtau.App.ViewModels {
                     || cmd is SingersRefreshedNotification
                     || cmd is PhonemizedNotification) {
                     OnPartModified();
-                    MessageBus.Current.SendMessage(new NotesRefreshEvent());
+                    MessageBus.Current.SendMessage(new NotesRefreshEvent()); // 发出刷新音符事件通知（reactiveui）
                 } else if (notif is PartRenderedNotification && notif.part == Part) {
-                    MessageBus.Current.SendMessage(new WaveformRefreshEvent());
+                    MessageBus.Current.SendMessage(new WaveformRefreshEvent()); // 发出刷新波形事件通知
                 }
             } else if (cmd is PartCommand partCommand) {
                 if (cmd is ReplacePartCommand replacePart) {
@@ -1070,7 +1075,7 @@ namespace OpenUtau.App.ViewModels {
                     }
                 }
             } else if (cmd is ExpCommand) {
-                MessageBus.Current.SendMessage(new NotesRefreshEvent());
+                MessageBus.Current.SendMessage(new NotesRefreshEvent()); // 发出刷新音符事件通知
             } else if (cmd is TrackCommand) {
                 if (cmd is RenameTrackCommand) {
                     LoadWindowTitle(Part, Project);

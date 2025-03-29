@@ -250,6 +250,7 @@
                            Bounds="{Binding Bounds, Mode=OneWayToSource}"
                            TrackHeight="{Binding TrackHeight}"
                            TrackOffset="{Binding TrackOffset}"/>
+          <!-- 高亮线 -->
         <c:TickBackground Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Margin="0" IsHitTestVisible="False"
                           Foreground="{DynamicResource TickLineBrush}"
                           Background="{DynamicResource TickLineBrushLow}"
@@ -259,6 +260,7 @@
                           SnapDiv="{Binding TracksViewModel.SnapDiv}"
                           SnapTicks="{Binding TracksViewModel.SnapTicks}"
                           ShowBarNumber="True"/>
+          <!-- 分片画布 -->
         <c:PartsCanvas x:Name="partsCanvas" Grid.Row="2" Grid.Column="1" ClipToBounds="True" Background="Transparent"
                        DataContext="{Binding TracksViewModel}"
                        TickWidth="{Binding TickWidth}"
@@ -282,6 +284,7 @@
                      Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}"
                      Fill="{DynamicResource TickLineBrushLow}" ZIndex="1000"
                      IsHitTestVisible="False" IsVisible="False"/>
+          <!-- 分片右键菜单 -->
           <c:PartsCanvas.ContextMenu>
             <ContextMenu Name="PartsContextMenu"
                          Opening="PartsContextMenuOpening"

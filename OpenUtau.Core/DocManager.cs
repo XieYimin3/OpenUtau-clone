@@ -256,7 +256,7 @@ namespace OpenUtau.Core {
             if (!cmd.Silent) {
                 Log.Information($"ExecuteCmd {cmd}");
             }
-            Publish(cmd);
+            Publish(cmd); // 发布命令
             if (!undoGroup.DeferValidate) {
                 Project.Validate(cmd.ValidateOptions);
             }

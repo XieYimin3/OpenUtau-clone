@@ -18,6 +18,9 @@ namespace OpenUtau.Core.Ustx {
         public override string ToString() => $"{bpm}@{position}";
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class UTimeSignature {
         public int barPosition;
         public int beatPerBar;
@@ -41,6 +44,7 @@ namespace OpenUtau.Core.Ustx {
         public Version ustxVersion;
         public int resolution = 480;
 
+        // 使用tempos
         [Obsolete("Since ustx v0.6")] public double bpm = 120;
         [Obsolete("Since ustx v0.6")] public int beatPerBar = 4;
         [Obsolete("Since ustx v0.6")] public int beatUnit = 4;
@@ -73,6 +77,9 @@ namespace OpenUtau.Core.Ustx {
 
         [YamlIgnore] public readonly TimeAxis timeAxis = new TimeAxis();
 
+        /// <summary>
+        /// 默认工程
+        /// </summary>
         public UProject() {
             timeSignatures = new List<UTimeSignature> { new UTimeSignature(0, 4, 4) };
             tempos = new List<UTempo> { new UTempo(0, 120) };
@@ -81,12 +88,21 @@ namespace OpenUtau.Core.Ustx {
             timeAxis.BuildSegments(this);
         }
 
+        /// <summary>
+        /// 添加表情
+        /// </summary>
+        /// <param name="descriptor"></param>
         public void RegisterExpression(UExpressionDescriptor descriptor) {
             if (!expressions.ContainsKey(descriptor.abbr)) {
                 expressions.Add(descriptor.abbr, descriptor);
             }
         }
 
+        /// <summary>
+        /// 合并表情
+        /// </summary>
+        /// <param name="oldAbbr">旧表情名</param>
+        /// <param name="newAbbr">新表情名</param>
         public void MargeExpression(string oldAbbr, string newAbbr) {
             if (parts != null && parts.Count > 0) {
                 parts.Where(p => p is UVoicePart)
@@ -117,15 +133,26 @@ namespace OpenUtau.Core.Ustx {
             }
         }
 
+        /// <summary>
+        /// 创建默认音符，但不向工程添加
+        /// </summary>
+        /// <returns>音符对象</returns>
         public UNote CreateNote() {
             UNote note = UNote.Create();
             int start = NotePresets.Default.DefaultPortamento.PortamentoStart;
             int length = NotePresets.Default.DefaultPortamento.PortamentoLength;
-            note.pitch.AddPoint(new PitchPoint(start, 0));
-            note.pitch.AddPoint(new PitchPoint(start + length, 0));
+            note.pitch.AddPoint(new PitchPoint(start, 0)); // 音符头部添加控制点
+            note.pitch.AddPoint(new PitchPoint(start + length, 0)); // 音符尾部添加控制点
             return note;
         }
 
+        /// <summary>
+        /// 根据音高、起始、长度创建音符，但不向工程添加
+        /// </summary>
+        /// <param name="noteNum"></param>
+        /// <param name="posTick"></param>
+        /// <param name="durTick"></param>
+        /// <returns></returns>
         public UNote CreateNote(int noteNum, int posTick, int durTick) {
             var note = CreateNote();
             note.tone = noteNum;

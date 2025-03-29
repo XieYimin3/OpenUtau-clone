@@ -215,7 +215,7 @@ namespace OpenUtau.App.Views {
         private bool playTone;
         public NoteDrawEditState(
             Control control,
-            PianoRollViewModel vm,
+            PianoRollViewModel vm, // 总的PianoRollViewModel
             IValueTip valueTip,
             bool playTone) : base(control, vm, valueTip) {
             this.playTone = playTone;

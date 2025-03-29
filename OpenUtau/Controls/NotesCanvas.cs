@@ -11,6 +11,9 @@ using OpenUtau.Core.Util;
 using ReactiveUI;
 
 namespace OpenUtau.App.Controls {
+    /// <summary>
+    /// 音符画布
+    /// </summary>
     class NotesCanvas : Control {
         public static readonly DirectProperty<NotesCanvas, double> TickWidthProperty =
             AvaloniaProperty.RegisterDirect<NotesCanvas, double>(
@@ -108,7 +111,7 @@ namespace OpenUtau.App.Controls {
             pointGeometry = new EllipseGeometry(new Rect(-2.5, -2.5, 5, 5));
 
             MessageBus.Current.Listen<NotesRefreshEvent>()
-                .Subscribe(_ => InvalidateVisual());
+                .Subscribe(_ => InvalidateVisual()); // 当接收到 NotesRefreshEvent 时，刷新画布视图
             MessageBus.Current.Listen<NotesSelectionEvent>()
                 .Subscribe(e => {
                     selectedNotes.Clear();
@@ -139,6 +142,10 @@ namespace OpenUtau.App.Controls {
             InvalidateVisual();
         }
 
+        /// <summary>
+        /// 重写画布渲染方法
+        /// </summary>
+        /// <param name="context"></param>
         public override void Render(DrawingContext context) {
             base.Render(context);
             if (Part == null) {

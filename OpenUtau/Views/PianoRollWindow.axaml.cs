@@ -88,7 +88,8 @@ namespace OpenUtau.App.Views {
                 }
 
             });
-            ViewModel.NoteBatchEdits.AddRange(new List<BatchEdit>() { // 向列表添加批量编辑-音符
+            // 向列表添加批量编辑-音符
+            ViewModel.NoteBatchEdits.AddRange(new List<BatchEdit>() { 
                 new LoadRenderedPitch(), // 加载渲染音高结果
                 new AddTailNote("-", "pianoroll.menu.notes.addtaildash"),
                 new AddTailNote("R", "pianoroll.menu.notes.addtailrest"),
@@ -106,7 +107,8 @@ namespace OpenUtau.App.Views {
                 Command = noteBatchEditCommand,
                 CommandParameter = edit,
             }));
-            ViewModel.LyricBatchEdits.AddRange(new List<BatchEdit>() { // 向列表添加批量编辑-歌词
+            // 向列表添加批量编辑-歌词
+            ViewModel.LyricBatchEdits.AddRange(new List<BatchEdit>() {
                 new RomajiToHiragana(),
                 new HiraganaToRomaji(),
                 new JapaneseVCVtoCV(),
@@ -122,7 +124,8 @@ namespace OpenUtau.App.Views {
                 Command = noteBatchEditCommand,
                 CommandParameter = edit,
             }));
-            ViewModel.ResetBatchEdits.AddRange(new List<BatchEdit>() { // 向列表添加批量编辑-重置
+            // 向列表添加批量编辑-重置
+            ViewModel.ResetBatchEdits.AddRange(new List<BatchEdit>() {
                 new ResetAll(),
                 new ResetPitchBends(),
                 new ResetAllExpressions(),
@@ -137,18 +140,21 @@ namespace OpenUtau.App.Views {
             }));
             DocManager.Inst.AddSubscriber(this);
 
+            // 动态添加-添加呼吸
             ViewModel.NoteBatchEdits.Insert(5, new MenuItemViewModel() {
                 Header = ThemeManager.GetString("pianoroll.menu.notes.addbreath"),
                 Command = ReactiveCommand.Create(() => {
                     AddBreathNote();
                 })
             });
+            // 动态添加-？
             ViewModel.NoteBatchEdits.Add(new MenuItemViewModel() {
                 Header = ThemeManager.GetString("pianoroll.menu.notes.lengthencrossfade"),
                 Command = ReactiveCommand.Create(() => {
                     LengthenCrossfade();
                 })
             });
+            // 动态添加-替换歌词
             ViewModel.LyricBatchEdits.Add(new MenuItemViewModel() {
                 Header = ThemeManager.GetString("lyricsreplace.replace"),
                 Command = ReactiveCommand.Create(() => {
@@ -165,19 +171,39 @@ namespace OpenUtau.App.Views {
             DocManager.Inst.AddSubscriber(this);
         }
 
+        /// <summary>
+        /// 窗口失效
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         public void WindowDeactivated(object sender, EventArgs args) {
             LyricBox?.EndEdit();
         }
 
+        /// <summary>
+        /// 窗口关闭
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void WindowClosing(object? sender, WindowClosingEventArgs e) {
             Hide();
             e.Cancel = true;
         }
 
+        /// <summary>
+        /// 关闭菜单时
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         void OnMenuClosed(object sender, RoutedEventArgs args) {
             Focus(); // Force unfocus menu for key down events.
         }
 
+        /// <summary>
+        /// 鼠标离开菜单时
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         void OnMenuPointerLeave(object sender, PointerEventArgs args) {
             Focus(); // Force unfocus menu for key down events.
         }
@@ -244,13 +270,19 @@ namespace OpenUtau.App.Views {
                 ViewModel.RaisePropertyChanged(nameof(ViewModel.LockStartTime2));
             }
         }
+
+        /// <summary>
+        /// 回放时自动滚动
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         void OnMenuPlaybackAutoScroll(object sender, RoutedEventArgs args) {
             if (sender is MenuItem menu && int.TryParse(menu.Tag?.ToString(), out int tag)) {
                 Preferences.Default.PlaybackAutoScroll = tag;
                 Preferences.Save();
-                ViewModel.RaisePropertyChanged(nameof(ViewModel.PlaybackAutoScroll0));
-                ViewModel.RaisePropertyChanged(nameof(ViewModel.PlaybackAutoScroll1));
-                ViewModel.RaisePropertyChanged(nameof(ViewModel.PlaybackAutoScroll2));
+                ViewModel.RaisePropertyChanged(nameof(ViewModel.PlaybackAutoScroll0)); // 通知属性更改-关
+                ViewModel.RaisePropertyChanged(nameof(ViewModel.PlaybackAutoScroll1)); // 通知属性更改-固定播放标记
+                ViewModel.RaisePropertyChanged(nameof(ViewModel.PlaybackAutoScroll2)); // 通知属性更改-整页滚动
             }
         }
 
@@ -281,6 +313,9 @@ namespace OpenUtau.App.Views {
             SearchBar.Show(ViewModel.NotesViewModel);
         }
 
+        /// <summary>
+        /// 替换歌词
+        /// </summary>
         void ReplaceLyrics() {
             if (ViewModel.NotesViewModel.Part == null) {
                 return;
@@ -542,22 +577,24 @@ namespace OpenUtau.App.Views {
         /// <param name="point"></param>
         /// <param name="args"></param>
         private void NotesCanvasLeftPointerPressed(Control control, PointerPoint point, PointerPressedEventArgs args) {
+            // 如果是绘制音高工具 或者绘制直线音高工具 或者覆盖音高工具
             if (ViewModel.NotesViewModel.DrawPitchTool || ViewModel.NotesViewModel.DrawLinePitchTool || ViewModel.NotesViewModel.OverwritePitchTool) {
                 ViewModel.NotesViewModel.DeselectNotes();
                 if (args.KeyModifiers == KeyModifiers.Alt) {
                     editState = new SmoothenPitchState(control, ViewModel, this);
                     return;
                 } else if (args.KeyModifiers != cmdKey) {
-                    if (ViewModel.NotesViewModel.DrawPitchTool) {
-                        editState = new DrawPitchState(control, ViewModel, this);
-                    } else if (ViewModel.NotesViewModel.DrawLinePitchTool) {
-                        editState = new DrawLinePitchState(control, ViewModel, this);
+                    if (ViewModel.NotesViewModel.DrawPitchTool) { // 如果是绘制音高模式
+                        editState = new DrawPitchState(control, ViewModel, this); // 设置编辑状态为绘制音高状态
+                    } else if (ViewModel.NotesViewModel.DrawLinePitchTool) { // 如果是绘制直线音高模式
+                        editState = new DrawLinePitchState(control, ViewModel, this); // 设置编辑状态为绘制直线音高状态
                     } else {
                         editState = new OverwritePitchState(control, ViewModel, this);
                     }
                     return;
                 }
             }
+            // 如果是橡皮工具
             if (ViewModel.NotesViewModel.EraserTool) {
                 ViewModel.NotesViewModel.DeselectNotes();
                 editState = new NoteEraseEditState(control, ViewModel, this, MouseButton.Left);
@@ -650,6 +687,7 @@ namespace OpenUtau.App.Views {
             } else if (ViewModel.NotesViewModel.PenTool || // 如果是笔或者笔增强工具
                 ViewModel.NotesViewModel.PenPlusTool) {
                 ViewModel.NotesViewModel.DeselectNotes(); // 取消已选中的音符
+                // 如果绘制音符：
                 editState = new NoteDrawEditState(control, ViewModel, this, ViewModel.NotesViewModel.PlayTone); // 创建音符绘制
             }
         }
